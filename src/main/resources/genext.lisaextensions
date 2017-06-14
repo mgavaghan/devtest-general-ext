@@ -1,0 +1,10 @@
+####################################
+# VSE Traffic Protocols
+####################################
+vseProtocols=org.gavaghan.devtest.dph.JSONResponseFormatter
+com.ca.mcd.ext.vse.RequestLogger
+
+####################################
+# Details for VSE Traffic Protocols
+####################################
+org.gavaghan.devtest.dph.JSONResponseFormatter=data:resp,JSON Response Formatter,JSON Response Formatter
