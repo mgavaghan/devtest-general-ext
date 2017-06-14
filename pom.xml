@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.gavaghan</groupId>
+	<artifactId>devtest-general-ext</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>org.gavaghan:devtest-general-ext</name>
+	<description>DevTest extensions that are generally useful</description>
+	<url>http://maven.apache.org</url>
+
+   <licenses>
+      <license>
+         <name>The Apache License, Version 2.0</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      </license>
+   </licenses>
+
+   <developers>
+      <developer>
+         <name>Mike Gavaghan</name>
+         <email>mike@gavaghan.org</email>
+         <organization>Mike Gavaghan</organization>
+         <organizationUrl>http://www.gavaghan.org/</organizationUrl>
+      </developer>
+   </developers>
+
+   <scm>
+      <connection>scm:git:git://github.com/mgavaghan/devtest-general-ext.git</connection>
+      <developerConnection>scm:git:ssh://github.com:mgavaghan/devtest-general-ext.git</developerConnection>
+      <url>http://github.com/mgavaghan/devtest-general-ext/tree/master</url>
+   </scm>
+
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <additionalparam>-Xdoclint:none</additionalparam>
+   </properties>
+
+	<dependencies>
+      <!-- Depends on the DevTest MOAJ -->
+      <dependency>
+         <groupId>com.ca</groupId>
+         <artifactId>devtest</artifactId>
+         <version>9.5.1</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <!-- gavaghan-json -->
+      <dependency>
+         <groupId>org.gavaghan</groupId>
+         <artifactId>gavaghan-json</artifactId>
+         <version>1.0.0</version>
+      </dependency>
+	</dependencies>
+</project>
