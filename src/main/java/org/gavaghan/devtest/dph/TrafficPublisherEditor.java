@@ -8,8 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.itko.commons.logging.Log;
-import com.itko.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.itko.util.StrUtil;
 
 /**
@@ -19,7 +20,7 @@ import com.itko.util.StrUtil;
 public class TrafficPublisherEditor extends JPanel
 {
 	/** Logger. */
-	static private final Log LOG = LogFactory.getLog(TrafficPublisherEditor.class);
+	static private final Logger LOG = LogManager.getLogger(TrafficPublisherEditor.class);
 
 	private JTextField mBrokerUrl = new JTextField();
 	private JTextField mBrokerUsername = new JTextField();

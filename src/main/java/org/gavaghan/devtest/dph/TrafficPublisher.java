@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.gavaghan.json.JSONNull;
 import org.gavaghan.json.JSONNumber;
 import org.gavaghan.json.JSONObject;
@@ -13,8 +15,6 @@ import org.gavaghan.json.JSONValue;
 import org.w3c.dom.Element;
 
 import com.itko.activemq.ActiveMQConnectionFactory;
-import com.itko.commons.logging.Log;
-import com.itko.commons.logging.LogFactory;
 import com.itko.jms.Connection;
 import com.itko.jms.JMSException;
 import com.itko.jms.Message;
@@ -41,7 +41,7 @@ import com.itko.util.Parameter;
 public class TrafficPublisher extends DataProtocol
 {
 	/** Logger. */
-	static private final Log LOG = LogFactory.getLog(TrafficPublisher.class);
+	static private final Logger LOG = LogManager.getLogger(TrafficPublisher.class);
 
 	/** Transaction ID value. */
 	static private final AtomicLong sTxnID = new AtomicLong();
@@ -148,7 +148,15 @@ public class TrafficPublisher extends DataProtocol
 		String brokerUsername = testExec.parseInState(getConfig().getBrokerUsername());
 		String brokerPassword = testExec.parseInState(getConfig().getBrokerPassword());
 		String topicName = testExec.parseInState(getConfig().getTopic());
+		
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("Broker URL: " + brokerUrl);
+			LOG.debug("Broker Username: " + brokerUsername);
+			LOG.debug("Topic: " + topicName);
+		}
 
+		LOG.debug("Creating connection factory");
 		ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUsername, brokerPassword, brokerUrl);
 		Connection connection = null;
 		Session session = null;
@@ -156,19 +164,25 @@ public class TrafficPublisher extends DataProtocol
 
 		try
 		{
+			LOG.debug("Creating connection");
 			connection = connFactory.createConnection();
+			LOG.debug("Creating session");
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			LOG.debug("Creating topic");
 			Topic topic = session.createTopic(topicName);
+			LOG.debug("Creating message producer");
 			messageProducer = session.createProducer(topic);
+			LOG.debug("Creating message");
 			TextMessage message = session.createTextMessage();
 
 			message.setText(json.toPrettyString());
 
+			LOG.debug("Publishing message");
 			messageProducer.send(message);
 		}
 		catch (JMSException exc)
 		{
-			LOG.warn("Failed to publich request to a topic", exc);
+			LOG.warn("Failed to publish request to a topic", exc);
 		}
 		finally
 		{

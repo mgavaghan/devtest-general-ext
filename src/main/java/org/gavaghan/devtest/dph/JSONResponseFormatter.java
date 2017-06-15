@@ -2,11 +2,11 @@ package org.gavaghan.devtest.dph;
 
 import java.io.StringReader;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.gavaghan.json.JSONValue;
 import org.gavaghan.json.JSONValueFactory;
 
-import com.itko.commons.logging.Log;
-import com.itko.commons.logging.LogFactory;
 import com.itko.lisa.test.TestExec;
 import com.itko.lisa.vse.stateful.model.Response;
 import com.itko.lisa.vse.stateful.protocol.DataProtocol;
@@ -19,7 +19,7 @@ import com.itko.lisa.vse.stateful.protocol.DataProtocol;
 public class JSONResponseFormatter extends DataProtocol
 {
 	/** Logger. */
-	static private final Log LOG = LogFactory.getLog(JSONResponseFormatter.class);
+	static private final Logger LOG = LogManager.getLogger(JSONResponseFormatter.class);
 
 	/**
 	 * Use this for parsing JSON responses - it can deal with magic strings.
