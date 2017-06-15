@@ -3,6 +3,7 @@ package org.gavaghan.devtest.dph;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.LogManager;
@@ -27,6 +28,7 @@ import com.itko.lisa.editor.Controller;
 import com.itko.lisa.gui.WizardStep;
 import com.itko.lisa.test.TestExec;
 import com.itko.lisa.vse.stateful.model.Request;
+import com.itko.lisa.vse.stateful.model.Transaction;
 import com.itko.lisa.vse.stateful.model.TransientResponse;
 import com.itko.lisa.vse.stateful.protocol.DataProtocol;
 import com.itko.lisa.vse.stateful.recorder.RecordingWizard;
@@ -66,13 +68,34 @@ public class TrafficPublisher extends DataProtocol
 	}
 
 	/**
+	 * Add testExec properties to the JSON object.
+	 * 
+	 * @param json
+	 * @param testExec
+	 */
+	@SuppressWarnings("unused")
+	private void addProperties(JSONObject json, TestExec testExec)
+	{
+		JSONObject properties = new JSONObject();
+		Map<String, Object> state = testExec.getAllState();
+
+		for (String key : state.keySet())
+		{
+			String value = testExec.getStateString(key, null);
+			properties.put(key, getStringOrNull(value));
+		}
+		json.put("properties", properties);
+	}
+
+	/**
 	 * Build a JSON object out of the request.
 	 * 
+	 * @param testExec
 	 * @param request
 	 * @param txnId
 	 * @return
 	 */
-	private JSONObject buildJSONRequest(Request request, long txnId)
+	private JSONObject buildJSONRequest(TestExec testExec, Request request, long txnId)
 	{
 		LOG.debug("ENTER - buildJSONRequest()");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -82,6 +105,9 @@ public class TrafficPublisher extends DataProtocol
 		json.put("txnId", new JSONNumber(txnId));
 		json.put("type", new JSONString("request"));
 		json.put("time", new JSONString(dateFormat.format(new Date())));
+		json.put("project", getStringOrNull(testExec.getStateString("LISA_PROJ_NAME", null)));
+		json.put("testCase", getStringOrNull(testExec.getStateString("testCase", null)));
+		json.put("vseHost", getStringOrNull(testExec.getStateString("VSE_HOST", null)));
 		json.put("operation", getStringOrNull(request.getOperation()));
 		json.put("body", getStringOrNull(request.getBodyAsString()));
 
@@ -101,17 +127,21 @@ public class TrafficPublisher extends DataProtocol
 		}
 		json.put("metadata", metadata);
 
+		// add properties
+		// addProperties(json, testExec);
+
 		return json;
 	}
 
 	/**
 	 * Build a JSON object out of the response.
 	 * 
+	 * @param testExec
 	 * @param response
 	 * @param txnId
 	 * @return
 	 */
-	private JSONObject buildJSONResponse(TransientResponse response, Long txnId)
+	private JSONObject buildJSONResponse(TestExec testExec, TransientResponse response, Long txnId)
 	{
 		LOG.debug("ENTER - buildJSONResponse()");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -121,16 +151,28 @@ public class TrafficPublisher extends DataProtocol
 		if (txnId != null) json.put("txnId", new JSONNumber(txnId.longValue()));
 		json.put("type", new JSONString("response"));
 		json.put("time", new JSONString(dateFormat.format(new Date())));
-		json.put("id", new JSONNumber(response.getId()));
-		json.put("body", getStringOrNull(response.getBodyAsString()));
+		json.put("project", getStringOrNull(testExec.getStateString("LISA_PROJ_NAME", null)));
+		json.put("testCase", getStringOrNull(testExec.getStateString("testCase", null)));
+		json.put("vseHost", getStringOrNull(testExec.getStateString("VSE_HOST", null)));
+		Transaction txn = (Transaction) testExec.getStateObject("lisa.vse.matched.transaction");
+		if (txn != null)
+		{
+			json.put("transactionId", new JSONNumber(txn.getId()));
+			if (txn.getConversationName() != null) json.put("conversationName", new JSONNumber(txn.getId()));
+		}
+
+		json.put("body", getStringOrNull(testExec.parseInState(response.getBodyAsString())));
 
 		// add metadata
 		JSONObject metadata = new JSONObject();
 		for (Parameter param : response.getMetaData())
 		{
-			metadata.put(param.getName(), getStringOrNull(param.getValue()));
+			metadata.put(param.getName(), getStringOrNull(testExec.parseInState(param.getValue())));
 		}
 		json.put("metadata", metadata);
+
+		// add properties
+		// addProperties(json, testExec);
 
 		return json;
 	}
@@ -148,7 +190,7 @@ public class TrafficPublisher extends DataProtocol
 		String brokerUsername = testExec.parseInState(getConfig().getBrokerUsername());
 		String brokerPassword = testExec.parseInState(getConfig().getBrokerPassword());
 		String topicName = testExec.parseInState(getConfig().getTopic());
-		
+
 		if (LOG.isDebugEnabled())
 		{
 			LOG.debug("Broker URL: " + brokerUrl);
@@ -242,7 +284,7 @@ public class TrafficPublisher extends DataProtocol
 		long txnId = sTxnID.getAndIncrement();
 		testExec.setStateValue(TXN_ID_KEY, new Long(txnId));
 
-		JSONObject json = buildJSONRequest(request, txnId);
+		JSONObject json = buildJSONRequest(testExec, request, txnId);
 
 		publishJSON(json, testExec);
 	}
@@ -255,7 +297,7 @@ public class TrafficPublisher extends DataProtocol
 	{
 		Long txnId = (Long) testExec.getStateValue(TXN_ID_KEY);
 
-		JSONObject json = buildJSONResponse(response, txnId);
+		JSONObject json = buildJSONResponse(testExec, response, txnId);
 
 		publishJSON(json, testExec);
 	}
@@ -383,7 +425,7 @@ public class TrafficPublisher extends DataProtocol
 		String brokerUrl = "tcp://localhost:61616";
 		String brokerUsername = "";
 		String brokerPassword = "";
-		String topicName = "MyTopic";
+		String topicName = "SomeTopic";
 
 		// create a Connection Factory
 		ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUsername, brokerPassword, brokerUrl);
