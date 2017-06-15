@@ -74,6 +74,7 @@ public class TrafficPublisher extends DataProtocol
 	 */
 	private JSONObject buildJSONRequest(Request request, long txnId)
 	{
+		LOG.debug("ENTER - buildJSONRequest()");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
@@ -112,6 +113,7 @@ public class TrafficPublisher extends DataProtocol
 	 */
 	private JSONObject buildJSONResponse(TransientResponse response, Long txnId)
 	{
+		LOG.debug("ENTER - buildJSONResponse()");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
@@ -138,12 +140,14 @@ public class TrafficPublisher extends DataProtocol
 	 * 
 	 * @param json
 	 */
-	private void publishJSON(JSONObject json)
+	private void publishJSON(JSONObject json, TestExec testExec)
 	{
-		String brokerUrl = "tcp://localhost:61616";
-		String brokerUsername = "";
-		String brokerPassword = "";
-		String topicName = "MyTopic";
+		LOG.debug("ENTER - publishJSON()");
+
+		String brokerUrl = testExec.parseInState(getConfig().getBrokerURL());
+		String brokerUsername = testExec.parseInState(getConfig().getBrokerUsername());
+		String brokerPassword = testExec.parseInState(getConfig().getBrokerPassword());
+		String topicName = testExec.parseInState(getConfig().getTopic());
 
 		ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUsername, brokerPassword, brokerUrl);
 		Connection connection = null;
@@ -190,8 +194,6 @@ public class TrafficPublisher extends DataProtocol
 	}
 
 	/**
-	 * 
-	 * 
 	 * @param editor
 	 */
 	void setEditor(final TrafficPublisherEditor editor)
@@ -228,7 +230,7 @@ public class TrafficPublisher extends DataProtocol
 
 		JSONObject json = buildJSONRequest(request, txnId);
 
-		publishJSON(json);
+		publishJSON(json, testExec);
 	}
 
 	/**
@@ -241,7 +243,7 @@ public class TrafficPublisher extends DataProtocol
 
 		JSONObject json = buildJSONResponse(response, txnId);
 
-		publishJSON(json);
+		publishJSON(json, testExec);
 	}
 
 	/**
@@ -270,11 +272,9 @@ public class TrafficPublisher extends DataProtocol
 	}
 
 	/**
-	 * 
-	 * 
 	 * @param controller
 	 *           - the controller for the filter that this belongs to
-	 * @return a {@code ScramblerDataProtocolEditor}
+	 * @return
 	 */
 	@Override
 	public synchronized TrafficPublisherEditor getCustomEditor(final Controller controller)
@@ -292,6 +292,8 @@ public class TrafficPublisher extends DataProtocol
 	@Override
 	public void display()
 	{
+		LOG.debug("ENTER - display()");
+
 		if (getEditor() != null)
 		{
 			getEditor().display(getConfig());
@@ -304,6 +306,8 @@ public class TrafficPublisher extends DataProtocol
 	@Override
 	public void save()
 	{
+		LOG.debug("ENTER - display()");
+
 		if (getEditor() != null)
 		{
 			getEditor().save(getConfig());
@@ -350,14 +354,6 @@ public class TrafficPublisher extends DataProtocol
 
 		switch (phase)
 		{
-		case SESSION_ID:
-			// if (getConfig().isRequestSide() ||
-			// (getRequestSideInstance(wizard.getRecordingSession()) == null))
-			// {
-			// steps = new WizardStep[] { new
-			// ScramblerDataProtocolConfigurationWizardPanel(this) };
-			// }
-			break;
 		case FINALIZE:
 			steps = new WizardStep[] { new TrafficPublisherWizardPanel(this, wizard.isRequestSide(this)) };
 			break;

@@ -8,15 +8,22 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.itko.commons.logging.Log;
+import com.itko.commons.logging.LogFactory;
+import com.itko.util.StrUtil;
+
 /**
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 public class TrafficPublisherEditor extends JPanel
 {
+	/** Logger. */
+	static private final Log LOG = LogFactory.getLog(TrafficPublisherEditor.class);
+
 	private JTextField mBrokerUrl = new JTextField();
-	private JTextField mBrokerUser = new JTextField();
-	private JTextField mBrokerPassword = new JPasswordField();
+	private JTextField mBrokerUsername = new JTextField();
+	private JPasswordField mBrokerPassword = new JPasswordField();
 	private JTextField mTopic = new JTextField();
 	
 	/**
@@ -24,9 +31,9 @@ public class TrafficPublisherEditor extends JPanel
 	 */
 	public TrafficPublisherEditor()
 	{
-		setLayout(new GridBagLayout());
+		LOG.debug("ENTER - TrafficPublisherEditor()");
 		
-		mBrokerUrl.setText("tcp://localhost:61616");
+		setLayout(new GridBagLayout());
 		
 		GridBagConstraints gbc;
 
@@ -64,7 +71,7 @@ public class TrafficPublisherEditor extends JPanel
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		add(mBrokerUser, gbc);
+		add(mBrokerUsername, gbc);
 
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -115,29 +122,43 @@ public class TrafficPublisherEditor extends JPanel
 	 */
 	public String isEditorValid(final TrafficPublisherConfiguration dataProtocolConfig)
 	{
+		LOG.debug("ENTER - isEditorValid()");
+		
+		if (StrUtil.isEmpty(mBrokerUrl.getText()))  return "Please specify a broker URL.";
+		if (StrUtil.isEmpty(mTopic.getText()))  return "Please specify an ActiveMQ topic.";
 		return null;
 	}
 
 	/**
-	 * This method is used to inform the panel that it has been activated. We use
-	 * this as a trigger to include our singleton file chooser.
+	 * This method is used to inform the panel that it has been activated.
 	 * 
-	 * @param dataProtocolConfig
-	 *           a {@code ScramblerDataProtocol}
+	 * @param config
 	 */
-	public void display(final TrafficPublisherConfiguration dataProtocolConfig)
+	public void display(final TrafficPublisherConfiguration config)
 	{
+		LOG.debug("ENTER - display()");
+		
+		mBrokerUrl.setText(config.getBrokerURL());
+		mBrokerUsername.setText(config.getBrokerUsername());
+		mBrokerPassword.setText(config.getBrokerPassword());
+		mTopic.setText(config.getTopic());
 	}
 
 	/**
-	 * Save the results to the (@code ScramblerDataProtocolConfiguration} object.
+	 * Save the results to the configuration object.
 	 * 
-	 * @param dataProtocolConfig
-	 *           a {@code ScramblerDataProtocol}
+	 * @param config
 	 * @return true if this saves successfully and false if it doesn't.
 	 */
-	public boolean save(final TrafficPublisherConfiguration dataProtocolConfig)
+	@SuppressWarnings("deprecation")
+	public boolean save(final TrafficPublisherConfiguration config)
 	{
+		LOG.debug("ENTER - save()");
+		
+		config.setBrokerURL(mBrokerUrl.getText());
+		config.setBrokerUsername(mBrokerUsername.getText());
+		config.setBrokerPassword(mBrokerPassword.getText());
+		config.setTopic(mTopic.getText());
 		return true;
 	}
 }
