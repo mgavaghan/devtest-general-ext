@@ -1,5 +1,6 @@
 package org.gavaghan.devtest.dph;
 
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,6 +10,7 @@ import org.gavaghan.json.JSONNumber;
 import org.gavaghan.json.JSONObject;
 import org.gavaghan.json.JSONString;
 import org.gavaghan.json.JSONValue;
+import org.w3c.dom.Element;
 
 import com.itko.activemq.ActiveMQConnectionFactory;
 import com.itko.commons.logging.Log;
@@ -21,10 +23,14 @@ import com.itko.jms.MessageProducer;
 import com.itko.jms.Session;
 import com.itko.jms.TextMessage;
 import com.itko.jms.Topic;
+import com.itko.lisa.editor.Controller;
+import com.itko.lisa.gui.WizardStep;
 import com.itko.lisa.test.TestExec;
 import com.itko.lisa.vse.stateful.model.Request;
 import com.itko.lisa.vse.stateful.model.TransientResponse;
 import com.itko.lisa.vse.stateful.protocol.DataProtocol;
+import com.itko.lisa.vse.stateful.recorder.RecordingWizard;
+import com.itko.lisa.vse.stateful.recorder.WizardPhase;
 import com.itko.util.Parameter;
 
 /**
@@ -42,6 +48,9 @@ public class TrafficPublisher extends DataProtocol
 
 	/** Transaction ID key. */
 	static private final String TXN_ID_KEY = "TrafficPublisher.TXN_ID";
+
+	/** Our editor. */
+	private TrafficPublisherEditor mEditor;
 
 	/**
 	 * Return a JSONNull or JSONString as appropriate.
@@ -66,7 +75,7 @@ public class TrafficPublisher extends DataProtocol
 	private JSONObject buildJSONRequest(Request request, long txnId)
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+
 		JSONObject json = new JSONObject();
 		json.put("version", new JSONString("1.0"));
 		json.put("txnId", new JSONNumber(txnId));
@@ -173,6 +182,42 @@ public class TrafficPublisher extends DataProtocol
 	}
 
 	/**
+	 * @return
+	 */
+	TrafficPublisherEditor getEditor()
+	{
+		return mEditor;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param editor
+	 */
+	void setEditor(final TrafficPublisherEditor editor)
+	{
+		mEditor = editor;
+	}
+
+	/**
+	 * Create a new TrafficPublisher.
+	 */
+	public TrafficPublisher()
+	{
+		setConfig(new TrafficPublisherConfiguration());
+	}
+
+	/**
+	 * Create a new TrafficPublisher.
+	 * 
+	 * @param config
+	 */
+	public TrafficPublisher(final TrafficPublisherConfiguration config)
+	{
+		setConfig(config);
+	}
+
+	/**
 	 * Publish an incoming request.
 	 */
 	@Override
@@ -197,6 +242,130 @@ public class TrafficPublisher extends DataProtocol
 		JSONObject json = buildJSONResponse(response, txnId);
 
 		publishJSON(json);
+	}
+
+	/**
+	 * @return the config
+	 */
+	@Override
+	public TrafficPublisherConfiguration getConfig()
+	{
+		return (TrafficPublisherConfiguration) super.getConfig();
+	}
+
+	/**
+	 * This method is used to initialize this transport protocol from the
+	 * specified XML element. Subclasses which override this method <b>MUST</b>
+	 * invoke {@code super.initialize(element);} for things to be restored
+	 * properly.
+	 * 
+	 * @param element
+	 *           the element to initialize from.
+	 */
+	@Override
+	public void initialize(final Element element)
+	{
+		super.initialize(element);
+		getConfig().initialize(element);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param controller
+	 *           - the controller for the filter that this belongs to
+	 * @return a {@code ScramblerDataProtocolEditor}
+	 */
+	@Override
+	public synchronized TrafficPublisherEditor getCustomEditor(final Controller controller)
+	{
+		if (getEditor() == null)
+		{
+			setEditor(new TrafficPublisherEditor());
+		}
+		return getEditor();
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void display()
+	{
+		if (getEditor() != null)
+		{
+			getEditor().display(getConfig());
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void save()
+	{
+		if (getEditor() != null)
+		{
+			getEditor().save(getConfig());
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public String isEditorValid()
+	{
+		if (getEditor() != null)
+		{
+			return getEditor().isEditorValid(getConfig());
+		}
+
+		return null;
+	}
+
+	@Override
+	public void writeSubXML(final PrintWriter out)
+	{
+		super.writeSubXML(out);
+		getConfig().writeSubXML(out);
+	}
+
+	/**
+	 * This method returns the list of recording wizard steps to use for this
+	 * protocol.
+	 * 
+	 * @param wizard
+	 *           the wizard the steps will be added to.
+	 * @param phase
+	 *           the phase of the recording wizard the steps should apply to.
+	 * 
+	 * @return an array of wizard step panels that will become part of the
+	 *         recording wizard.
+	 */
+	@Override
+	public WizardStep[] getWizardSteps(final RecordingWizard wizard, final WizardPhase phase)
+	{
+		WizardStep[] steps = null;
+
+		switch (phase)
+		{
+		case SESSION_ID:
+			// if (getConfig().isRequestSide() ||
+			// (getRequestSideInstance(wizard.getRecordingSession()) == null))
+			// {
+			// steps = new WizardStep[] { new
+			// ScramblerDataProtocolConfigurationWizardPanel(this) };
+			// }
+			break;
+		case FINALIZE:
+			steps = new WizardStep[] { new TrafficPublisherWizardPanel(this, wizard.isRequestSide(this)) };
+			break;
+		default:
+			break;
+		}
+
+		return steps;
 	}
 
 	static public void main(String[] args) throws Exception
