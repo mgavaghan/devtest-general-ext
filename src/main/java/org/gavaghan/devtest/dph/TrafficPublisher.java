@@ -1,10 +1,14 @@
 package org.gavaghan.devtest.dph;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.gavaghan.json.JSONNull;
 import org.gavaghan.json.JSONNumber;
 import org.gavaghan.json.JSONObject;
 import org.gavaghan.json.JSONString;
+import org.gavaghan.json.JSONValue;
 
 import com.itko.activemq.ActiveMQConnectionFactory;
 import com.itko.commons.logging.Log;
@@ -40,6 +44,19 @@ public class TrafficPublisher extends DataProtocol
 	static private final String TXN_ID_KEY = "TrafficPublisher.TXN_ID";
 
 	/**
+	 * Return a JSONNull or JSONString as appropriate.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private JSONValue getStringOrNull(String value)
+	{
+		if (value == null) return new JSONNull();
+
+		return new JSONString(value);
+	}
+
+	/**
 	 * Build a JSON object out of the request.
 	 * 
 	 * @param request
@@ -48,18 +65,21 @@ public class TrafficPublisher extends DataProtocol
 	 */
 	private JSONObject buildJSONRequest(Request request, long txnId)
 	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		JSONObject json = new JSONObject();
 		json.put("version", new JSONString("1.0"));
 		json.put("txnId", new JSONNumber(txnId));
 		json.put("type", new JSONString("request"));
-		json.put("operation", new JSONString(request.getOperation()));
-		json.put("body", new JSONString(request.getBodyAsString()));
+		json.put("time", new JSONString(dateFormat.format(new Date())));
+		json.put("operation", getStringOrNull(request.getOperation()));
+		json.put("body", getStringOrNull(request.getBodyAsString()));
 
 		// add arguments
 		JSONObject args = new JSONObject();
 		for (Parameter param : request.getArguments())
 		{
-			args.put(param.getName(), new JSONString(param.getValue()));
+			args.put(param.getName(), getStringOrNull(param.getValue()));
 		}
 		json.put("arguments", args);
 
@@ -67,7 +87,7 @@ public class TrafficPublisher extends DataProtocol
 		JSONObject metadata = new JSONObject();
 		for (Parameter param : request.getMetaData())
 		{
-			metadata.put(param.getName(), new JSONString(param.getValue()));
+			metadata.put(param.getName(), getStringOrNull(param.getValue()));
 		}
 		json.put("metadata", metadata);
 
@@ -83,24 +103,27 @@ public class TrafficPublisher extends DataProtocol
 	 */
 	private JSONObject buildJSONResponse(TransientResponse response, Long txnId)
 	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		JSONObject json = new JSONObject();
 		json.put("version", new JSONString("1.0"));
-		if (txnId != null)  json.put("txnId", new JSONNumber(txnId.longValue()));
+		if (txnId != null) json.put("txnId", new JSONNumber(txnId.longValue()));
 		json.put("type", new JSONString("response"));
+		json.put("time", new JSONString(dateFormat.format(new Date())));
 		json.put("id", new JSONNumber(response.getId()));
-		json.put("body", new JSONString(response.getBodyAsString()));	
+		json.put("body", getStringOrNull(response.getBodyAsString()));
 
 		// add metadata
 		JSONObject metadata = new JSONObject();
 		for (Parameter param : response.getMetaData())
 		{
-			metadata.put(param.getName(), new JSONString(param.getValue()));
+			metadata.put(param.getName(), getStringOrNull(param.getValue()));
 		}
 		json.put("metadata", metadata);
 
 		return json;
 	}
-	
+
 	/**
 	 * Publish the JSON to the configured topic.
 	 * 
@@ -199,17 +222,20 @@ public class TrafficPublisher extends DataProtocol
 		// create a MessageProducer for sending messages
 		MessageConsumer messageConsumer = session.createConsumer(topic);
 
-		Message received = messageConsumer.receive();
-		if (received instanceof TextMessage)
+		while (true)
 		{
-			TextMessage text = (TextMessage) received;
-			System.out.println(text.getText());
+			Message received = messageConsumer.receive();
+			if (received instanceof TextMessage)
+			{
+				TextMessage text = (TextMessage) received;
+				System.out.println(text.getText());
+			}
 		}
 
-		connection.stop();
-		messageConsumer.close();
-		session.close();
-		connection.close();
-		System.out.println("Done");
+		// connection.stop();
+		// messageConsumer.close();
+		// session.close();
+		// connection.close();
+		// System.out.println("Done");
 	}
 }

@@ -8,4 +8,4 @@ org.gavaghan.devtest.dph.TrafficPublisher
 # Details for VSE Traffic Protocols
 ####################################
 org.gavaghan.devtest.dph.JSONResponseFormatter=data:resp,JSON Response Formatter,JSON Response Formatter
-org.gavaghan.devtest.dph.TrafficPublisher=data:req:resp,Traffic Publisher,Traffic Publisher
+org.gavaghan.devtest.dph.TrafficPublisher=data:req:resp,Traffic Publisher,Publishes request and response to an ActiveMQ topic
