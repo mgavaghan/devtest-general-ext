@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using Apache.NMS;
@@ -12,10 +13,17 @@ using Apache.NMS.Util;
 using Apache.NMS.ActiveMQ;
 using Apache.NMS.ActiveMQ.Commands;
 
+using log4net;
+
 namespace Gavaghan.TrafficBuddy
 {
   public partial class TopicPanel : UserControl
   {
+    /// <summary>
+    /// Our logger.
+    /// </summary>
+    static private readonly ILog LOG = LogManager.GetLogger(typeof(TopicPanel));
+
     public TopicPanel()
     {
       InitializeComponent();
@@ -45,14 +53,21 @@ namespace Gavaghan.TrafficBuddy
     private IConnection mConnection;
     private ISession mSession;
     private IMessageConsumer mMessageConsumer;
+    private TopicListener mListener;
 
     /// <summary>
     /// Open connection to a topic.
     /// </summary>
     public void OpenTopic()
     {
+      LOG.Info("Topic opening");
+
+      mConfigPanel.setProperties(this);
+
       // don't open twice
       if (mOpened) return;
+
+      mOpened = true;
 
       try
       {
@@ -74,7 +89,13 @@ namespace Gavaghan.TrafficBuddy
         // create a MessageProducer for sending messages
         mMessageConsumer = mSession.CreateConsumer(topic);
 
-        mOpened = true;
+        // create the Listener
+        mListener = new TopicListener(mMessageConsumer);
+        Thread thread = new Thread(new ThreadStart(mListener.Listen));
+
+        mListener.Failed += mListener_Failed;
+
+        thread.Start();
       }
       catch (Exception exc)
       {
@@ -86,7 +107,7 @@ namespace Gavaghan.TrafficBuddy
         builder.Append("\n\n");
         builder.Append(exc.Message);
 
-        MessageBox.Show(builder.ToString(), "Failed to Connect to Broker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, builder.ToString(), "Failed to Connect to Broker", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -95,7 +116,11 @@ namespace Gavaghan.TrafficBuddy
     /// </summary>
     public void CloseTopic()
     {
+      LOG.Info("Topic closing");
+
       mOpened = false;
+
+      if (mListener != null) mListener.Failed -= mListener_Failed;
 
       // stop everything
       try
@@ -105,15 +130,42 @@ namespace Gavaghan.TrafficBuddy
         if (mSession != null) mSession.Close();
         if (mConnection != null) mConnection.Close();
       }
-      catch
+      catch (Exception exc)
       {
-        // TODO log this
+        LOG.Warn("Unexpected failure closing topic", exc);
       }
 
       mConnection = null;
       mMessageConsumer = null;
       mSession = null;
     }
+
+    /// <summary>
+    /// Event to handle failure of Listener.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    /// 
+    private delegate void ExceptionDelegate(Exception exc);
+
+    public void mListener_Failed(object sender, ListenerFailedEventArgs args)
+    {
+      CloseTopic();
+
+      Invoke(new ExceptionDelegate(ShowLostConnection), args.Cause);
+    }
+
+    private void ShowLostConnection(Exception exc)
+    {
+      StringBuilder builder = new StringBuilder();
+
+      builder.Append("Lost connect to topic '").Append(Topic).Append("' at ").Append(BrokerURL);
+      builder.Append("\n\n");
+      builder.Append(exc.Message);
+
+      MessageBox.Show(this, builder.ToString(), "Lost Connection to Topic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
     #endregion
 
     /// <summary>
@@ -123,6 +175,8 @@ namespace Gavaghan.TrafficBuddy
     /// <param name="e"></param>
     private void mTrafficPanel_VisibleChanged(object sender, EventArgs e)
     {
+      if (Visible) mConfigPanel.setProperties(this);
+
       OpenTopic();
     }
   }

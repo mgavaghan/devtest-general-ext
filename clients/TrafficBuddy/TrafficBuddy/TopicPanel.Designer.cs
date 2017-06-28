@@ -28,8 +28,17 @@
     /// </summary>
     private void InitializeComponent()
     {
+      this.mConfigPanel = new Gavaghan.TrafficBuddy.ConfigPanel();
       this.mTrafficPanel = new Gavaghan.TrafficBuddy.TrafficPanel();
       this.SuspendLayout();
+      // 
+      // mConfigPanel
+      // 
+      this.mConfigPanel.Dock = System.Windows.Forms.DockStyle.Top;
+      this.mConfigPanel.Location = new System.Drawing.Point(0, 0);
+      this.mConfigPanel.Name = "mConfigPanel";
+      this.mConfigPanel.Size = new System.Drawing.Size(1095, 132);
+      this.mConfigPanel.TabIndex = 1;
       // 
       // mTrafficPanel
       // 
@@ -43,6 +52,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.Controls.Add(this.mConfigPanel);
       this.Controls.Add(this.mTrafficPanel);
       this.Name = "TopicPanel";
       this.Size = new System.Drawing.Size(1095, 548);
@@ -53,5 +63,6 @@
     #endregion
 
     private TrafficPanel mTrafficPanel;
+    private ConfigPanel mConfigPanel;
   }
 }
