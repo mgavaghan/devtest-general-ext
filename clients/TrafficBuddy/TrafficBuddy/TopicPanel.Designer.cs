@@ -28,34 +28,39 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.mConfigPanel = new Gavaghan.TrafficBuddy.ConfigPanel();
       this.mTrafficPanel = new Gavaghan.TrafficBuddy.TrafficPanel();
+      this.mConfigPanel = new Gavaghan.TrafficBuddy.ConfigPanel();
       this.SuspendLayout();
+      // 
+      // mTrafficPanel
+      // 
+      this.mTrafficPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.mTrafficPanel.Location = new System.Drawing.Point(0, 132);
+      this.mTrafficPanel.Name = "mTrafficPanel";
+      this.mTrafficPanel.Size = new System.Drawing.Size(1095, 416);
+      this.mTrafficPanel.TabIndex = 0;
       // 
       // mConfigPanel
       // 
+      this.mConfigPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
       this.mConfigPanel.Dock = System.Windows.Forms.DockStyle.Top;
       this.mConfigPanel.Location = new System.Drawing.Point(0, 0);
       this.mConfigPanel.Name = "mConfigPanel";
       this.mConfigPanel.Size = new System.Drawing.Size(1095, 132);
       this.mConfigPanel.TabIndex = 1;
-      // 
-      // mTrafficPanel
-      // 
-      this.mTrafficPanel.Location = new System.Drawing.Point(22, 41);
-      this.mTrafficPanel.Name = "mTrafficPanel";
-      this.mTrafficPanel.Size = new System.Drawing.Size(1026, 468);
-      this.mTrafficPanel.TabIndex = 0;
-      this.mTrafficPanel.VisibleChanged += new System.EventHandler(this.mTrafficPanel_VisibleChanged);
+      this.mConfigPanel.VisibleChanged += new System.EventHandler(this.mConfigPanel_VisibleChanged);
+      this.mConfigPanel.Connect += new System.EventHandler<System.EventArgs>(this.mConfigPanel_Connect);
+      this.mConfigPanel.ConfigChanged += new System.EventHandler<System.EventArgs>(this.mConfigPanel_ConfigChanged);
       // 
       // TopicPanel
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Controls.Add(this.mConfigPanel);
       this.Controls.Add(this.mTrafficPanel);
+      this.Controls.Add(this.mConfigPanel);
       this.Name = "TopicPanel";
       this.Size = new System.Drawing.Size(1095, 548);
+      this.VisibleChanged += new System.EventHandler(this.TopicPanel_VisibleChanged);
       this.ResumeLayout(false);
 
     }

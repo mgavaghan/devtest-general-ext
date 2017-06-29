@@ -19,6 +19,7 @@ namespace Gavaghan.TrafficBuddy
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
       mTopicPanel.CloseTopic();
+      mTopicPanel.SaveConfiguration();
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)

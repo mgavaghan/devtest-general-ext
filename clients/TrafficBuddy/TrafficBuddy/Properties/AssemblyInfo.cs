@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TrafficBuddy")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Traffic Buddy")]
+[assembly: AssemblyDescription("DevTest Virtual Service Traffic Tracker")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CA Technologies")]
-[assembly: AssemblyProduct("TrafficBuddy")]
-[assembly: AssemblyCopyright("Copyright © CA Technologies 2017")]
+[assembly: AssemblyCompany("Mike Gavaaghan")]
+[assembly: AssemblyProduct("Traffic Buddy")]
+[assembly: AssemblyCopyright("Copyright © Mike Gavaghan 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

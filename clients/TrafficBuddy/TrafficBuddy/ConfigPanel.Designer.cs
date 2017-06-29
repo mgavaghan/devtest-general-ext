@@ -36,12 +36,12 @@
       this.mPasswordTextBox = new System.Windows.Forms.TextBox();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
-      this.label4 = new System.Windows.Forms.Label();
-      this.mTopicTextBox = new System.Windows.Forms.TextBox();
-      this.label5 = new System.Windows.Forms.Label();
-      this.mProjectTextBox = new System.Windows.Forms.TextBox();
-      this.label6 = new System.Windows.Forms.Label();
       this.mServiceTextBox = new System.Windows.Forms.TextBox();
+      this.label6 = new System.Windows.Forms.Label();
+      this.mProjectTextBox = new System.Windows.Forms.TextBox();
+      this.label5 = new System.Windows.Forms.Label();
+      this.mTopicTextBox = new System.Windows.Forms.TextBox();
+      this.label4 = new System.Windows.Forms.Label();
       this.mImportButton = new System.Windows.Forms.Button();
       this.mExportButton = new System.Windows.Forms.Button();
       this.mPauseButton = new System.Windows.Forms.Button();
@@ -87,6 +87,7 @@
       this.mBrokerURLTextBox.Size = new System.Drawing.Size(186, 22);
       this.mBrokerURLTextBox.TabIndex = 3;
       this.mBrokerURLTextBox.Text = "tcp://localhost:61616";
+      this.mBrokerURLTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
       // 
       // mUsernameTextBox
       // 
@@ -95,6 +96,7 @@
       this.mUsernameTextBox.Size = new System.Drawing.Size(100, 22);
       this.mUsernameTextBox.TabIndex = 4;
       this.mUsernameTextBox.Text = "username";
+      this.mUsernameTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
       // 
       // mPasswordTextBox
       // 
@@ -104,6 +106,7 @@
       this.mPasswordTextBox.Size = new System.Drawing.Size(100, 22);
       this.mPasswordTextBox.TabIndex = 5;
       this.mPasswordTextBox.Text = "username";
+      this.mPasswordTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
       // 
       // groupBox1
       // 
@@ -136,41 +139,14 @@
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Filter Configuration";
       // 
-      // label4
+      // mServiceTextBox
       // 
-      this.label4.AutoSize = true;
-      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(18, 29);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(48, 17);
-      this.label4.TabIndex = 1;
-      this.label4.Text = "Topic";
-      // 
-      // mTopicTextBox
-      // 
-      this.mTopicTextBox.Location = new System.Drawing.Point(72, 26);
-      this.mTopicTextBox.Name = "mTopicTextBox";
-      this.mTopicTextBox.Size = new System.Drawing.Size(102, 22);
-      this.mTopicTextBox.TabIndex = 4;
-      this.mTopicTextBox.Text = "SomeTopic";
-      // 
-      // label5
-      // 
-      this.label5.AutoSize = true;
-      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label5.Location = new System.Drawing.Point(180, 29);
-      this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(59, 17);
-      this.label5.TabIndex = 5;
-      this.label5.Text = "Project";
-      // 
-      // mProjectTextBox
-      // 
-      this.mProjectTextBox.Location = new System.Drawing.Point(245, 26);
-      this.mProjectTextBox.Name = "mProjectTextBox";
-      this.mProjectTextBox.Size = new System.Drawing.Size(130, 22);
-      this.mProjectTextBox.TabIndex = 6;
-      this.mProjectTextBox.Text = "SomeTopic";
+      this.mServiceTextBox.Location = new System.Drawing.Point(457, 26);
+      this.mServiceTextBox.Name = "mServiceTextBox";
+      this.mServiceTextBox.Size = new System.Drawing.Size(130, 22);
+      this.mServiceTextBox.TabIndex = 8;
+      this.mServiceTextBox.Text = "SomeTopic";
+      this.mServiceTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
       // 
       // label6
       // 
@@ -182,13 +158,43 @@
       this.label6.TabIndex = 7;
       this.label6.Text = "Service";
       // 
-      // mServiceTextBox
+      // mProjectTextBox
       // 
-      this.mServiceTextBox.Location = new System.Drawing.Point(457, 26);
-      this.mServiceTextBox.Name = "mServiceTextBox";
-      this.mServiceTextBox.Size = new System.Drawing.Size(130, 22);
-      this.mServiceTextBox.TabIndex = 8;
-      this.mServiceTextBox.Text = "SomeTopic";
+      this.mProjectTextBox.Location = new System.Drawing.Point(245, 26);
+      this.mProjectTextBox.Name = "mProjectTextBox";
+      this.mProjectTextBox.Size = new System.Drawing.Size(130, 22);
+      this.mProjectTextBox.TabIndex = 6;
+      this.mProjectTextBox.Text = "SomeTopic";
+      this.mProjectTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
+      // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label5.Location = new System.Drawing.Point(180, 29);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(59, 17);
+      this.label5.TabIndex = 5;
+      this.label5.Text = "Project";
+      // 
+      // mTopicTextBox
+      // 
+      this.mTopicTextBox.Location = new System.Drawing.Point(72, 26);
+      this.mTopicTextBox.Name = "mTopicTextBox";
+      this.mTopicTextBox.Size = new System.Drawing.Size(102, 22);
+      this.mTopicTextBox.TabIndex = 4;
+      this.mTopicTextBox.Text = "SomeTopic";
+      this.mTopicTextBox.TextChanged += new System.EventHandler(this.property_TextChanged);
+      // 
+      // label4
+      // 
+      this.label4.AutoSize = true;
+      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label4.Location = new System.Drawing.Point(18, 29);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(48, 17);
+      this.label4.TabIndex = 1;
+      this.label4.Text = "Topic";
       // 
       // mImportButton
       // 
@@ -230,6 +236,7 @@
       this.mConnectButton.TabIndex = 11;
       this.mConnectButton.Text = "Connect";
       this.mConnectButton.UseVisualStyleBackColor = false;
+      this.mConnectButton.Click += new System.EventHandler(this.mConnectButton_Click);
       // 
       // ConfigPanel
       // 
