@@ -42,8 +42,7 @@
       this.label5 = new System.Windows.Forms.Label();
       this.mTopicTextBox = new System.Windows.Forms.TextBox();
       this.label4 = new System.Windows.Forms.Label();
-      this.mImportButton = new System.Windows.Forms.Button();
-      this.mExportButton = new System.Windows.Forms.Button();
+      this.mClearButton = new System.Windows.Forms.Button();
       this.mPauseButton = new System.Windows.Forms.Button();
       this.mConnectButton = new System.Windows.Forms.Button();
       this.groupBox1.SuspendLayout();
@@ -196,30 +195,20 @@
       this.label4.TabIndex = 1;
       this.label4.Text = "Topic";
       // 
-      // mImportButton
+      // mClearButton
       // 
-      this.mImportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.mImportButton.Location = new System.Drawing.Point(715, 26);
-      this.mImportButton.Name = "mImportButton";
-      this.mImportButton.Size = new System.Drawing.Size(125, 40);
-      this.mImportButton.TabIndex = 8;
-      this.mImportButton.Text = "Import";
-      this.mImportButton.UseVisualStyleBackColor = true;
-      // 
-      // mExportButton
-      // 
-      this.mExportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.mExportButton.Location = new System.Drawing.Point(857, 26);
-      this.mExportButton.Name = "mExportButton";
-      this.mExportButton.Size = new System.Drawing.Size(125, 40);
-      this.mExportButton.TabIndex = 9;
-      this.mExportButton.Text = "Export";
-      this.mExportButton.UseVisualStyleBackColor = true;
+      this.mClearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.mClearButton.Location = new System.Drawing.Point(715, 22);
+      this.mClearButton.Name = "mClearButton";
+      this.mClearButton.Size = new System.Drawing.Size(125, 40);
+      this.mClearButton.TabIndex = 8;
+      this.mClearButton.Text = "Clear";
+      this.mClearButton.UseVisualStyleBackColor = true;
       // 
       // mPauseButton
       // 
       this.mPauseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.mPauseButton.Location = new System.Drawing.Point(715, 77);
+      this.mPauseButton.Location = new System.Drawing.Point(715, 73);
       this.mPauseButton.Name = "mPauseButton";
       this.mPauseButton.Size = new System.Drawing.Size(125, 40);
       this.mPauseButton.TabIndex = 10;
@@ -230,7 +219,7 @@
       // 
       this.mConnectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
       this.mConnectButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.mConnectButton.Location = new System.Drawing.Point(857, 77);
+      this.mConnectButton.Location = new System.Drawing.Point(857, 73);
       this.mConnectButton.Name = "mConnectButton";
       this.mConnectButton.Size = new System.Drawing.Size(125, 40);
       this.mConnectButton.TabIndex = 11;
@@ -245,8 +234,7 @@
       this.BackColor = System.Drawing.SystemColors.ActiveCaption;
       this.Controls.Add(this.mConnectButton);
       this.Controls.Add(this.mPauseButton);
-      this.Controls.Add(this.mExportButton);
-      this.Controls.Add(this.mImportButton);
+      this.Controls.Add(this.mClearButton);
       this.Controls.Add(this.groupBox2);
       this.Controls.Add(this.groupBox1);
       this.Name = "ConfigPanel";
@@ -275,8 +263,7 @@
     private System.Windows.Forms.TextBox mProjectTextBox;
     private System.Windows.Forms.Label label5;
     private System.Windows.Forms.TextBox mServiceTextBox;
-    private System.Windows.Forms.Button mImportButton;
-    private System.Windows.Forms.Button mExportButton;
+    private System.Windows.Forms.Button mClearButton;
     private System.Windows.Forms.Button mPauseButton;
     private System.Windows.Forms.Button mConnectButton;
   }

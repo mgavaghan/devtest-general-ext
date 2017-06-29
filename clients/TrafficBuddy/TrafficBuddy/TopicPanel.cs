@@ -95,6 +95,7 @@ namespace Gavaghan.TrafficBuddy
         Thread thread = new Thread(new ThreadStart(mListener.Listen));
 
         mListener.Failed += mListener_Failed;
+        mListener.Traffic += mListener_Traffic;
 
         thread.Start();
       }
@@ -121,7 +122,11 @@ namespace Gavaghan.TrafficBuddy
 
       mOpened = false;
 
-      if (mListener != null) mListener.Failed -= mListener_Failed;
+      if (mListener != null)
+      {
+        mListener.Failed -= mListener_Failed;
+        mListener.Traffic -= mListener_Traffic;
+      }
 
       // stop everything
       try
@@ -247,12 +252,12 @@ namespace Gavaghan.TrafficBuddy
       }
       else
       {
-        BrokerURL = config["brokerURL"].Value.ToString();
-        BrokerUsername = config["username"].Value.ToString();
-        BrokerPassword = config["password"].Value.ToString();
-        Topic = config["topic"].Value.ToString();
-        Project = config["project"].Value.ToString();
-        Service = config["service"].Value.ToString();
+        BrokerURL = Utils.ToString(config["brokerURL"]);
+        BrokerUsername = Utils.ToString(config["username"]);
+        BrokerPassword = Utils.ToString(config["password"]);
+        Topic = Utils.ToString(config["topic"]);
+        Project = Utils.ToString(config["project"]);
+        Service = Utils.ToString(config["service"]);
       }
     }
 
@@ -300,6 +305,71 @@ namespace Gavaghan.TrafficBuddy
         LOG.Debug("ConfigPanel is visible");
         mConfigPanel.setProperties(this);
         mConfigPanel.setConnected(false);
+      }
+    }
+    #endregion
+    #region Traffic Operations
+    private JSONArray mRawTraffic = new JSONArray();
+    private IList<Transaction> mTraffic = new List<Transaction>();
+
+    public JSONObject RawTraffic
+    {
+      get
+      {
+        JSONObject traffic = new JSONObject();
+
+        lock (mRawTraffic)
+        {
+          traffic.Add("traffic", mRawTraffic.DeepCopy());
+        }
+
+        return traffic;
+      }
+    }
+
+    public void mListener_Traffic(object sender, TrafficReceivedEventArgs args)
+    {
+      //FIXME apply filters
+
+      LOG.Debug("Got traffic");
+      JSONObject traffic = args.Traffic;
+      string type = Utils.ToString(traffic["type"]);
+
+      try
+      {
+        if ("request".Equals(type))
+        {
+          Request request = new Request(traffic);
+          Transaction txn = new Transaction(request);
+          mTraffic.Add(txn);
+          lock (mRawTraffic)
+          {
+            ((IList<IJSONValue>)mRawTraffic.Value).Add(traffic);
+          }
+          LOG.Debug("Request added");
+        }
+        else if ("response".Equals(type))
+        {
+          Response response = new Response(traffic);
+
+          for (int i = mTraffic.Count - 1; i >= 0; i--)
+          {
+            Transaction cand = mTraffic[i];
+            if (cand.TxnID == response.TxnID)
+            {
+              LOG.Debug("Matching request found");
+              cand.AddResponse(response);
+              lock (mRawTraffic)
+              {
+                ((IList<IJSONValue>)mRawTraffic.Value).Add(traffic);
+              }
+            }
+          }
+        }
+      }
+      catch (BadTrafficException exc)
+      {
+        LOG.Warn("Received bad traffic", exc);
       }
     }
     #endregion
