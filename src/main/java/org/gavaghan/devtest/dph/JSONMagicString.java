@@ -6,6 +6,7 @@ import java.io.Writer;
 
 import org.gavaghan.json.AbstractJSONValue;
 import org.gavaghan.json.JSONException;
+import org.gavaghan.json.JSONValue;
 import org.gavaghan.json.JSONValueFactory;
 
 /**
@@ -50,6 +51,30 @@ public class JSONMagicString extends AbstractJSONValue
 	public Object getValue()
 	{
 		return mValue;
+	}
+
+	/**
+	 * Create a prototype instance of the same type.
+	 * 
+	 * @return
+	 */
+	@Override
+	public JSONValue createPrototype()
+	{
+		return new JSONMagicString();
+	}
+
+	/**
+	 * Copy the value of another JSONValue into our underlying value.
+	 * 
+	 * @param value
+	 */
+	@Override
+	public void copyValue(JSONValue value)
+	{
+		if (!getClass().isAssignableFrom(value.getClass())) throw new RuntimeException("Can't assign a " + value.getClass().getName() + " to a " + getClass().getName());
+
+		mValue = (String) value.getValue();
 	}
 
 	/**
