@@ -101,9 +101,9 @@ public class TrafficPublisher extends DataProtocol
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
+		json.put("type", new JSONString("request"));
 		json.put("version", new JSONString("1.0"));
 		json.put("txnId", new JSONNumber(txnId));
-		json.put("type", new JSONString("request"));
 		json.put("time", new JSONString(dateFormat.format(new Date())));
 		json.put("project", getStringOrNull(testExec.getStateString("LISA_PROJ_NAME", null)));
 		json.put("testCase", getStringOrNull(testExec.getStateString("testCase", null)));
@@ -147,9 +147,9 @@ public class TrafficPublisher extends DataProtocol
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
+		json.put("type", new JSONString("response"));
 		json.put("version", new JSONString("1.0"));
 		if (txnId != null) json.put("txnId", new JSONNumber(txnId.longValue()));
-		json.put("type", new JSONString("response"));
 		json.put("time", new JSONString(dateFormat.format(new Date())));
 		json.put("project", getStringOrNull(testExec.getStateString("LISA_PROJ_NAME", null)));
 		json.put("testCase", getStringOrNull(testExec.getStateString("testCase", null)));

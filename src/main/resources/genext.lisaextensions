@@ -1,4 +1,14 @@
 ####################################
+# DevTest filters
+####################################
+filters=org.gavaghan.devtest.filter.TracingFilter
+
+####################################
+# Details for DevTest filters
+####################################
+org.gavaghan.devtest.filter.TracingFilter=com.itko.lisa.editor.FilterController,com.itko.lisa.editor.DefaultFilterEditor
+
+####################################
 # VSE Traffic Protocols
 ####################################
 vseProtocols=org.gavaghan.devtest.dph.JSONResponseFormatter, \
