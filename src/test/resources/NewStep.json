@@ -1,0 +1,7 @@
+{
+	"type": "Step",
+   "name": "NewStep",
+	"package": "com.example.test",
+	"author" : "Mike Gavaghan",
+	"authorEmail" : "mike.gavaghan@ca.com"
+}
