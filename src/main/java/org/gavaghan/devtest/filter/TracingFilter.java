@@ -66,7 +66,6 @@ public class TracingFilter extends FilterBaseImpl
 	 * @param json
 	 * @param testExec
 	 */
-	@SuppressWarnings("unused")
 	private void addProperties(JSONObject json, TestExec testExec)
 	{
 		JSONObject properties = new JSONObject();
