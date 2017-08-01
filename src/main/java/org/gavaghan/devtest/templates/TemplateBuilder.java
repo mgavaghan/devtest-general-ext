@@ -1,10 +1,10 @@
 package org.gavaghan.devtest.templates;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.tools.ant.BuildException;
 import org.gavaghan.json.JSONNull;
 import org.gavaghan.json.JSONObject;
 import org.gavaghan.json.JSONString;
@@ -38,13 +38,11 @@ public abstract class TemplateBuilder
 	private ZipOutputStream mZOS;
 
 	/**
-	 * Implementation specific building.
+	 * Get the list of file builders.
 	 * 
-	 * @param config
-	 * @throws BuildException
-	 * @throws IOException
+	 * @return
 	 */
-	protected abstract void build(JSONObject config) throws BuildException, IOException;
+	protected abstract List<FileBuilder> getFileBuilders();
 
 	/**
 	 * Null safe value get of a string.
@@ -132,6 +130,16 @@ public abstract class TemplateBuilder
 	public abstract boolean canBuild(JSONObject config);
 
 	/**
+	 * Get line separator sequence.
+	 * 
+	 * @return
+	 */
+	public String getEOL()
+	{
+		return System.getProperty("line.separator");
+	}
+
+	/**
 	 * Get the template name.
 	 * 
 	 * @return
@@ -162,6 +170,26 @@ public abstract class TemplateBuilder
 	}
 
 	/**
+	 * Get the author.
+	 * 
+	 * @return
+	 */
+	public String getAuthor()
+	{
+		return mAuthor;
+	}
+
+	/**
+	 * Get the author email address..
+	 * 
+	 * @return
+	 */
+	public String getAuthorEmail()
+	{
+		return mAuthorEmail;
+	}
+
+	/**
 	 * Go build the template.
 	 * 
 	 * @param config
@@ -176,8 +204,13 @@ public abstract class TemplateBuilder
 		getName(config);
 		getPackage(config);
 		getAuthor(config);
-		
-		build(config);
+
+		for (FileBuilder fb : getFileBuilders())
+		{
+			String content = fb.build(this, config);
+			String filename = getPackagePath() + "/" + fb.getName(this, config);
+			addFile(filename, content);
+		}
 
 		mZOS.finish();
 	}

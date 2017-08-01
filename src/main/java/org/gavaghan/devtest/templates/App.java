@@ -28,13 +28,13 @@ public class App
 	/** Logger. */
 	static private final Logger LOG = LogManager.getLogger(App.class);
 
-	/** List of available builders. */
-	static private final List<TemplateBuilder> sBuilders = new ArrayList<TemplateBuilder>();
+	/** List of available template builders. */
+	static private final List<TemplateBuilder> sTemplateBuilders = new ArrayList<TemplateBuilder>();
 
 	static
 	{
 		// build the list of available builders
-		sBuilders.add(new StepTemplateBuilder());
+		sTemplateBuilders.add(new StepTemplateBuilder());
 	}
 
 	/**
@@ -77,11 +77,11 @@ public class App
 	 * @param config
 	 * @return
 	 */
-	private static TemplateBuilder selectBuilder(String filename, JSONObject config)
+	private static TemplateBuilder selectTemplateBuilder(String filename, JSONObject config)
 	{
 		TemplateBuilder builder = null;
 
-		for (TemplateBuilder candidate : sBuilders)
+		for (TemplateBuilder candidate : sTemplateBuilders)
 		{
 			if (candidate.canBuild(config))
 			{
@@ -122,8 +122,8 @@ public class App
 		// load the configuration
 		JSONObject config = loadConfiguration(configPath);
 
-		// find our builder
-		TemplateBuilder builder = selectBuilder(configPath, config);
+		// find our template builder
+		TemplateBuilder templateBuilder = selectTemplateBuilder(configPath, config);
 		
 		// determine output filename
 		File configFile = new File(configPath);
@@ -136,7 +136,7 @@ public class App
 		// open output file and start building
 		try (OutputStream os = new FileOutputStream(file); ZipOutputStream zos = new ZipOutputStream(os))
 		{
-			builder.build(config, zos);
+			templateBuilder.build(config, zos);
 		}
 		catch (BuilderException exc)
 		{
@@ -146,6 +146,6 @@ public class App
 			System.exit(-4);
 		}
 		
-		System.out.println(builder.getPackagePath());
+		System.out.println(templateBuilder.getPackagePath());
 	}
 }
