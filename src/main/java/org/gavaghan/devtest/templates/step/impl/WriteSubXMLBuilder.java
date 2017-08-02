@@ -1,4 +1,4 @@
-package org.gavaghan.devtest.templates.step;
+package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,14 +12,21 @@ import org.gavaghan.json.JSONObject;
 import com.ibm.icu.text.MessageFormat;
 
 /**
- * Step type name.
+ * writeSubXML()
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class StepTypeNameBuilder implements MemberBuilder
+public class WriteSubXMLBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
+
+	static
+	{
+		// build package list
+		sPackages.add("java.io.PrintWriter");
+		sPackages.add("com.itko.util.XMLUtils");
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -27,7 +34,7 @@ public class StepTypeNameBuilder implements MemberBuilder
 	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
 	 */
 	@Override
-	public List<String> getPackages()
+	public List<String> getPackages(JSONObject config)
 	{
 		return sPackages;
 	}
@@ -35,7 +42,7 @@ public class StepTypeNameBuilder implements MemberBuilder
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		String format = parent.readResource("step/StepTypeName.txt");
+		String format = parent.readResource("step/impl/WriteSubXML.txt");
 		builder.append(MessageFormat.format(format, parent.getName()));
 	}
 }

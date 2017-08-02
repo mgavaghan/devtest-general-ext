@@ -1,7 +1,11 @@
 {
-	"type": "Step",
-   "name": "NewFunctionality",
-	"package": "com.example.test",
-	"author" : "Mike Gavaghan",
-	"authorEmail" : "mike.gavaghan@ca.com"
+    "type": "Step",
+    "name": "NewFunctionality",
+    "package": "com.example.test",
+    "author": "Mike Gavaghan",
+    "authorEmail": "mike.gavaghan@ca.com",
+    "fields": {
+        "foo": "java.lang.String",
+        "bar": "String"
+    }
 }

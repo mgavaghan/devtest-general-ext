@@ -15,6 +15,8 @@ import org.gavaghan.json.JSONString;
 import org.gavaghan.json.JSONValue;
 
 /**
+ * Base implementation to a class that creates a DevTest template
+ * implementation.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -22,7 +24,7 @@ public abstract class TemplateBuilder
 {
 	/** The UTF-8 character set. */
 	static private final Charset UTF8 = Charset.forName("UTF-8");
-	
+
 	/** Singleton null. */
 	static private final JSONNull JSON_NULL = new JSONNull();
 
@@ -56,7 +58,7 @@ public abstract class TemplateBuilder
 	 * 
 	 * @param json
 	 * @param name
-	 * @return
+	 * @return 'null' if value does not exist or is not a JSONString.
 	 */
 	protected String getString(JSONObject json, String name)
 	{

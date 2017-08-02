@@ -1,4 +1,4 @@
-package org.gavaghan.devtest.templates.step;
+package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import org.gavaghan.json.JSONObject;
 import com.ibm.icu.text.MessageFormat;
 
 /**
- * The Log4j member.
+ * Step initializer.
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class Log4JBuilder implements MemberBuilder
+public class StepInitializeBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
@@ -24,21 +24,35 @@ public class Log4JBuilder implements MemberBuilder
 	static
 	{
 		// build package list
-		sPackages.add("org.apache.log4j.LogManager");
-		sPackages.add("org.apache.log4j.Logger");
+		sPackages.add("com.itko.lisa.test.TestCase");
+		sPackages.add("com.itko.lisa.test.TestDefException");
+		sPackages.add("com.itko.util.XMLUtils");
+		sPackages.add("org.w3c.dom.Element");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
+	 */
 	@Override
 	public List<String> getPackages(JSONObject config)
 	{
 		return sPackages;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.gavaghan.devtest.templates.MemberBuilder#build(org.gavaghan.devtest.
+	 * templates.TemplateBuilder, org.gavaghan.json.JSONObject,
+	 * java.lang.StringBuilder)
+	 */
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		builder.append("   /** Our logger */").append(parent.getEOL());
-		builder.append(MessageFormat.format("   static private final Logger LOG = LogManager.getLogger({0}Step.class);", parent.getName()));
-		builder.append(parent.getEOL());
+		String format = parent.readResource("step/impl/StepInitialize.txt");
+		builder.append(MessageFormat.format(format, parent.getName()));
 	}
 }

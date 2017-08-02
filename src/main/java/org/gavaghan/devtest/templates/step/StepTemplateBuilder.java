@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.gavaghan.devtest.templates.FileBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
+import org.gavaghan.devtest.templates.step.impl.ImplFileBuilder;
 import org.gavaghan.json.JSONObject;
 
 /**
@@ -20,6 +21,7 @@ public class StepTemplateBuilder extends TemplateBuilder
 	static
 	{
 		// build up the file builder list
+		sFileBuilders.add(new MetadataBuilder());
 		sFileBuilders.add(new ImplFileBuilder());
 	}
 	

@@ -1,0 +1,19 @@
+   /**
+    * Get {0}.
+    *
+    * @return {0}
+    */
+   public {2} get{1}()
+   '{'
+      return m{1};
+   }
+
+   /**
+    * Set {0}/
+    *
+    * @param value
+    */
+   public void set{1}({2} value)
+   '{'
+      m{1} = value;
+   }

@@ -1,4 +1,4 @@
-package org.gavaghan.devtest.templates.step;
+package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,31 +12,22 @@ import org.gavaghan.json.JSONObject;
 import com.ibm.icu.text.MessageFormat;
 
 /**
- * Step initializer.
+ * Step type name.
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class StepInitializeBuilder implements MemberBuilder
+public class StepTypeNameBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
 
-	static
-	{
-		// build package list
-		sPackages.add("com.itko.lisa.test.TestCase");
-		sPackages.add("com.itko.lisa.test.TestDefException");
-		sPackages.add("com.itko.util.XMLUtils");
-		sPackages.add("org.w3c.dom.Element");
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
 	 */
 	@Override
-	public List<String> getPackages()
+	public List<String> getPackages(JSONObject config)
 	{
 		return sPackages;
 	}
@@ -44,7 +35,7 @@ public class StepInitializeBuilder implements MemberBuilder
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		String format = parent.readResource("step/StepInitialize.txt");
+		String format = parent.readResource("step/impl/StepTypeName.txt");
 		builder.append(MessageFormat.format(format, parent.getName()));
 	}
 }

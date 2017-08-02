@@ -9,7 +9,7 @@ import java.util.Map;
 import org.gavaghan.json.JSONObject;
 
 /**
- * Base implementation of a class that renders a template class.
+ * Base implementation of a class that renders a template DevTest file.
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
@@ -19,7 +19,7 @@ public abstract class FileBuilder implements HasDependencies
 	static private final PackageComparator sPackageCompare = new PackageComparator();
 
 	/**
-	 * Get the list of member builder.
+	 * Get the list of member builders.
 	 * 
 	 * @return
 	 */
@@ -64,7 +64,7 @@ public abstract class FileBuilder implements HasDependencies
 		Map<String, String> uniquePackages = new HashMap<String, String>();
 
 		// get the type's dependencies
-		for (String pack : getPackages())
+		for (String pack : getPackages(config))
 		{
 			uniquePackages.put(pack, null);
 		}
@@ -72,7 +72,7 @@ public abstract class FileBuilder implements HasDependencies
 		// add member dependencies
 		for (MemberBuilder memberBuilder : getMemberBuilders())
 		{
-			for (String pack : memberBuilder.getPackages())
+			for (String pack : memberBuilder.getPackages(config))
 			{
 				uniquePackages.put(pack, null);
 			}
@@ -85,24 +85,24 @@ public abstract class FileBuilder implements HasDependencies
 		{
 			packages.add(pack);
 		}
-		
+
 		packages.sort(sPackageCompare);
 
 		// write them out
 		String lastComp = "";
-		
+
 		for (String pack : packages)
 		{
 			// get first component
 			int dot = pack.indexOf('.');
 			String comp = (dot < 0) ? pack : pack.substring(0, dot);
-			
+
 			if (!lastComp.equals(comp))
 			{
 				lastComp = comp;
 				builder.append(parent.getEOL());
 			}
-			
+
 			builder.append("import ").append(pack).append(";").append(parent.getEOL());
 		}
 	}
@@ -191,17 +191,17 @@ public abstract class FileBuilder implements HasDependencies
 		writeImports(parent, config, builder);
 		writeTypeComment(parent, config, builder);
 		writeOpenType(parent, config, builder);
-		
+
 		boolean first = true;
-		
+
 		for (MemberBuilder memberBuilder : getMemberBuilders())
 		{
-			if (first)  first = false;
+			if (first) first = false;
 			else builder.append(parent.getEOL());
-			
+
 			memberBuilder.build(parent, config, builder);
 		}
-		
+
 		writeCloseType(parent, config, builder);
 
 		return builder.toString();

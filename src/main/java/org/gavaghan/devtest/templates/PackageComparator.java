@@ -7,8 +7,6 @@ import java.util.List;
 /**
  * Compare one package name to another.
  * 
- * java/javax/org/com
- * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
 class PackageComparator implements Comparator<String>
