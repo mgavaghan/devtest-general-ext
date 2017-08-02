@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.gavaghan.devtest.templates.step.StepTemplateBuilder;
 import org.gavaghan.json.JSONException;
 import org.gavaghan.json.JSONObject;
@@ -25,9 +23,6 @@ import org.gavaghan.json.JSONValueFactory;
  */
 public class App
 {
-	/** Logger. */
-	static private final Logger LOG = LogManager.getLogger(App.class);
-
 	/** List of available template builders. */
 	static private final List<TemplateBuilder> sTemplateBuilders = new ArrayList<TemplateBuilder>();
 
@@ -145,7 +140,5 @@ public class App
 			System.out.println();
 			System.exit(-4);
 		}
-		
-		System.out.println(templateBuilder.getPackagePath());
 	}
 }

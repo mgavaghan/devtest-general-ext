@@ -1,0 +1,9 @@
+   /**
+    * Get the type name.
+    */
+   @Override
+   public String getTypeName() throws Exception
+   '{'
+      // TODO Provide a step type name
+      return "{0}";
+   }

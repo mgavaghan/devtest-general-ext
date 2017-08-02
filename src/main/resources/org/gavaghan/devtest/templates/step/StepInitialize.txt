@@ -1,0 +1,8 @@
+   /**
+    * Initialize from a test file.
+    */
+   @Override
+   public void initialize(TestCase testCase, Element elem) throws TestDefException
+   '{'
+      // setCommand(XMLUtils.findChildGetItsText(elem, "command"));
+   }

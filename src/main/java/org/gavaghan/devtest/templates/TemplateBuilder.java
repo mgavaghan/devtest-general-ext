@@ -1,6 +1,10 @@
 package org.gavaghan.devtest.templates;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -16,6 +20,9 @@ import org.gavaghan.json.JSONValue;
  */
 public abstract class TemplateBuilder
 {
+	/** The UTF-8 character set. */
+	static private final Charset UTF8 = Charset.forName("UTF-8");
+	
 	/** Singleton null. */
 	static private final JSONNull JSON_NULL = new JSONNull();
 
@@ -117,6 +124,33 @@ public abstract class TemplateBuilder
 		mZOS.putNextEntry(entry);
 		mZOS.write(content.getBytes("UTF-8"));
 		mZOS.closeEntry();
+	}
+
+	/**
+	 * Read an embedded resource.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws IOException
+	 */
+	public String readResource(String name) throws IOException
+	{
+		StringBuilder builder = new StringBuilder();
+
+		try (InputStream in = FileBuilder.class.getResourceAsStream(name); InputStreamReader isr = new InputStreamReader(in, UTF8); BufferedReader bufr = new BufferedReader(isr))
+		{
+			String line;
+
+			for (;;)
+			{
+				line = bufr.readLine();
+				if (line == null) break;
+
+				builder.append(line).append(getEOL());
+			}
+		}
+
+		return builder.toString();
 	}
 
 	/**
