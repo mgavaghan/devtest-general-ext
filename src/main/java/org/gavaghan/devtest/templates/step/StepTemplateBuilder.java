@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.gavaghan.devtest.templates.FileBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
+import org.gavaghan.devtest.templates.step.editor.EditorFileBuilder;
 import org.gavaghan.devtest.templates.step.impl.ImplFileBuilder;
 import org.gavaghan.json.JSONObject;
 
@@ -24,6 +25,7 @@ public class StepTemplateBuilder extends TemplateBuilder
 		sFileBuilders.add(new MetadataBuilder());
 		sFileBuilders.add(new ImplFileBuilder());
 		sFileBuilders.add(new ControllerFileBuilder());
+		sFileBuilders.add(new EditorFileBuilder());
 	}
 	
 	/*

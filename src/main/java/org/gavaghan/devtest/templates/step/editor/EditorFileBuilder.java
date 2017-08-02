@@ -1,4 +1,4 @@
-package org.gavaghan.devtest.templates.step.impl;
+package org.gavaghan.devtest.templates.step.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.FileBuilder;
-import org.gavaghan.devtest.templates.Log4JBuilder;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.json.JSONObject;
@@ -17,7 +16,7 @@ import com.ibm.icu.text.MessageFormat;
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class ImplFileBuilder extends FileBuilder
+public class EditorFileBuilder extends FileBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
@@ -28,17 +27,14 @@ public class ImplFileBuilder extends FileBuilder
 	static
 	{
 		// build package list
-		sPackages.add("com.itko.util.CloneImplemented");
-		sPackages.add("com.itko.lisa.test.TestNode");
+		sPackages.add("com.itko.lisa.editor.CustomEditor");
 		
 		// build member list
-		sMembers.add(new Log4JBuilder());
-		sMembers.add(new ImplFieldsBuilder());
-		sMembers.add(new ImplAccessorsBuilder());
-		sMembers.add(new StepTypeNameBuilder());
-		sMembers.add(new StepInitializeBuilder());
-		sMembers.add(new WriteSubXMLBuilder());
-		sMembers.add(new ExecuteBuilder());
+		sMembers.add(new EditorFieldsBuilder());
+		sMembers.add(new EditorAccessorsBuilder());
+		sMembers.add(new IsEditorValidBuilder());
+		sMembers.add(new SaveAndDisplayBuilder());
+		sMembers.add(new SetupEditorBuilder());
 	}
 
 	/*
@@ -72,7 +68,7 @@ public class ImplFileBuilder extends FileBuilder
 	@Override
 	public String getName(TemplateBuilder parent, JSONObject config) throws BuilderException, IOException
 	{
-		return parent.getName() + "Step.java";
+		return parent.getName() + "Editor.java";
 	}
 
 	/*
@@ -86,7 +82,7 @@ public class ImplFileBuilder extends FileBuilder
 	@Override
 	public void writeOpenType(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		builder.append(MessageFormat.format("public class {0}Step extends TestNode implements CloneImplemented", parent.getName()));
+		builder.append(MessageFormat.format("public class {0}Editor extends CustomEditor", parent.getName()));
 		builder.append(parent.getEOL());
 		builder.append("{").append(parent.getEOL());
 	}

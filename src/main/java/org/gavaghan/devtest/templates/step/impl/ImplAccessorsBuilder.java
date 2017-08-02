@@ -17,7 +17,7 @@ import org.gavaghan.json.JSONString;
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class AccessorsBuilder implements MemberBuilder
+public class ImplAccessorsBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = Collections.unmodifiableList(new ArrayList<String>());
@@ -36,7 +36,7 @@ public class AccessorsBuilder implements MemberBuilder
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		JSONObject fields = FieldsBuilder.getUnqualifiedFields(config);
+		JSONObject fields = ImplFieldsBuilder.getUnqualifiedFields(config);
 		if (fields == null) return;
 		
 		String format = parent.readResource("step/impl/Accessors.txt");
@@ -49,7 +49,7 @@ public class AccessorsBuilder implements MemberBuilder
 			else builder.append(parent.getEOL());
 
 			String value = (String) ((JSONString) fields.get(key)).getValue();
-			builder.append(MessageFormat.format(format, key, FieldsBuilder.camelCase(key), value));
+			builder.append(MessageFormat.format(format, key, ImplFieldsBuilder.camelCase(key), value));
 		}
 	}
 }

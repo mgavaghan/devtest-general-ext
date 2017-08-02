@@ -1,0 +1,26 @@
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.CustomEditor#save()
+    */
+   @Override
+   public void save()
+   '{'
+      {0}Controller controller = ({0}Controller) getController();
+      controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
+      {0}Step step = ({0}Step) controller.getAttribute({0}Controller.STEP_KEY);
+
+{1}   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.CustomEditor#display()
+    */
+   @Override
+   public void display()
+   '{'
+      setupEditor();
+
+      {0}Controller controller = ({0}Controller) getController();
+      {0}Step step = ({0}Step) controller.getAttribute({0}Controller.STEP_KEY);
+
+{2}   }

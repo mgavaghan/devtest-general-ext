@@ -17,7 +17,7 @@ import org.gavaghan.json.JSONValue;
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class FieldsBuilder implements MemberBuilder
+public class ImplFieldsBuilder implements MemberBuilder
 {
 	/**
 	 * Get fields, if any, on the type. This method assures the correctness of

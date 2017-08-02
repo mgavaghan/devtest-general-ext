@@ -1,12 +1,9 @@
-package org.gavaghan.devtest.templates.step;
+package org.gavaghan.devtest.templates;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gavaghan.devtest.templates.BuilderException;
-import org.gavaghan.devtest.templates.MemberBuilder;
-import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.json.JSONObject;
 
 import com.ibm.icu.text.MessageFormat;
@@ -28,12 +25,20 @@ public class Log4JBuilder implements MemberBuilder
 		sPackages.add("org.apache.log4j.Logger");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages(org.gavaghan.json.JSONObject)
+	 */
 	@Override
 	public List<String> getPackages(JSONObject config)
 	{
 		return sPackages;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.gavaghan.devtest.templates.MemberBuilder#build(org.gavaghan.devtest.templates.TemplateBuilder, org.gavaghan.json.JSONObject, java.lang.StringBuilder)
+	 */
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{

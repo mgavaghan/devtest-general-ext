@@ -1,0 +1,9 @@
+   /**
+    * Get {0}.
+    *
+    * @return {0}
+    */
+   public JTextField get{1}()
+   '{'
+      return m{1};
+   }
