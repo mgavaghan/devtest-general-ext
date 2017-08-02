@@ -1,8 +1,8 @@
-   /**
-    * Save to test file.
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.test.TestNode#writeSubXML(java.io.PrintWriter)
     */
    @Override
    public void writeSubXML(PrintWriter pw)
    '{'
-      // XMLUtils.streamTagAndChild(pw, "command", getCommand());
-   }
+{0}   }

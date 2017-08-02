@@ -23,6 +23,7 @@ public class StepTemplateBuilder extends TemplateBuilder
 		// build up the file builder list
 		sFileBuilders.add(new MetadataBuilder());
 		sFileBuilders.add(new ImplFileBuilder());
+		sFileBuilders.add(new ControllerFileBuilder());
 	}
 	
 	/*

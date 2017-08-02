@@ -1,4 +1,4 @@
-package org.gavaghan.devtest.templates.step.impl;
+package org.gavaghan.devtest.templates.step;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,12 @@ import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.FileBuilder;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
-import org.gavaghan.devtest.templates.step.Log4JBuilder;
+import org.gavaghan.devtest.templates.step.impl.AccessorsBuilder;
+import org.gavaghan.devtest.templates.step.impl.ExecuteBuilder;
+import org.gavaghan.devtest.templates.step.impl.FieldsBuilder;
+import org.gavaghan.devtest.templates.step.impl.StepInitializeBuilder;
+import org.gavaghan.devtest.templates.step.impl.StepTypeNameBuilder;
+import org.gavaghan.devtest.templates.step.impl.WriteSubXMLBuilder;
 import org.gavaghan.json.JSONObject;
 
 import com.ibm.icu.text.MessageFormat;
@@ -17,7 +22,7 @@ import com.ibm.icu.text.MessageFormat;
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class ImplFileBuilder extends FileBuilder
+public class ControllerFileBuilder extends FileBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
@@ -28,17 +33,10 @@ public class ImplFileBuilder extends FileBuilder
 	static
 	{
 		// build package list
-		sPackages.add("com.itko.util.CloneImplemented");
-		sPackages.add("com.itko.lisa.test.TestNode");
-		
+		sPackages.add("com.itko.lisa.editor.TestNodeInfo");
+
 		// build member list
-		sMembers.add(new Log4JBuilder());
-		sMembers.add(new FieldsBuilder());
-		sMembers.add(new AccessorsBuilder());
-		sMembers.add(new StepTypeNameBuilder());
-		sMembers.add(new StepInitializeBuilder());
-		sMembers.add(new WriteSubXMLBuilder());
-		sMembers.add(new ExecuteBuilder());
+		sMembers.add(new ControllerMemberBuilder());
 	}
 
 	/*
@@ -62,17 +60,10 @@ public class ImplFileBuilder extends FileBuilder
 		return sPackages;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.gavaghan.devtest.templates.FileBuilder#getName(org.gavaghan.devtest.
-	 * templates.TemplateBuilder, org.gavaghan.json.JSONObject)
-	 */
 	@Override
 	public String getName(TemplateBuilder parent, JSONObject config) throws BuilderException, IOException
 	{
-		return parent.getName() + "Step.java";
+		return parent.getName() + "Controller.java";
 	}
 
 	/*
@@ -86,7 +77,7 @@ public class ImplFileBuilder extends FileBuilder
 	@Override
 	public void writeOpenType(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		builder.append(MessageFormat.format("public class {0}Step extends TestNode implements CloneImplemented", parent.getName()));
+		builder.append(MessageFormat.format("public class {0}Controller extends TestNodeInfo", parent.getName()));
 		builder.append(parent.getEOL());
 		builder.append("{").append(parent.getEOL());
 	}

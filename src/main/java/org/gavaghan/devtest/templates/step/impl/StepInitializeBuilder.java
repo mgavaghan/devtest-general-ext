@@ -53,6 +53,18 @@ public class StepInitializeBuilder implements MemberBuilder
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
 		String format = parent.readResource("step/impl/StepInitialize.txt");
-		builder.append(MessageFormat.format(format, parent.getName()));
+		
+		StringBuilder setters = new StringBuilder();
+		
+		JSONObject fields = FieldsBuilder.getUnqualifiedFields(config);
+		if (fields != null)
+		{
+			for (String key : fields.keySet())
+			{
+				setters.append(MessageFormat.format("      set{1}(XMLUtils.findChildGetItsText(elem, \"{0}\"));{2}", key, FieldsBuilder.camelCase(key), parent.getEOL()));
+			}
+		}
+		
+		builder.append(MessageFormat.format(format, setters.toString()));
 	}
 }

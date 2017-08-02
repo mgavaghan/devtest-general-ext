@@ -1,8 +1,8 @@
-   /**
-    * Initialize from a test file.
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.test.TestNode#initialize(com.itko.lisa.test.TestCase, org.w3c.dom.Element)
     */
    @Override
    public void initialize(TestCase testCase, Element elem) throws TestDefException
    '{'
-      // setCommand(XMLUtils.findChildGetItsText(elem, "command"));
-   }
+{0}   }

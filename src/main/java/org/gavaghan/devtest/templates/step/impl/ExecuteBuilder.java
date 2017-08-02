@@ -2,6 +2,7 @@ package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.gavaghan.devtest.templates.BuilderException;
@@ -12,22 +13,22 @@ import org.gavaghan.json.JSONObject;
 import com.ibm.icu.text.MessageFormat;
 
 /**
- * writeSubXML()
+ * Render execute method.
  * 
  * @author <a href="mailto:mike.gavaghan@ca.com">Mike Gavaghan</a>
  */
-public class WriteSubXMLBuilder implements MemberBuilder
+public class ExecuteBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
 	static private final List<String> sPackages = new ArrayList<String>();
 
 	static
 	{
-		// build package list
-		sPackages.add("java.io.PrintWriter");
-		sPackages.add("com.itko.util.XMLUtils");
+		sPackages.add("com.itko.lisa.test.TestExec");
+		sPackages.add("com.itko.lisa.test.TestRunException");
+		sPackages.add("com.itko.lisa.test.TestEvent");
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -42,18 +43,6 @@ public class WriteSubXMLBuilder implements MemberBuilder
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
-		String format = parent.readResource("step/impl/WriteSubXML.txt");
-		StringBuilder setters = new StringBuilder();
-		
-		JSONObject fields = FieldsBuilder.getUnqualifiedFields(config);
-		if (fields != null)
-		{
-			for (String key : fields.keySet())
-			{
-				setters.append(MessageFormat.format("      XMLUtils.streamTagAndChild(pw, \"{0}\", get{1}());{2}", key, FieldsBuilder.camelCase(key), parent.getEOL()));
-			}
-		}
-		
-		builder.append(MessageFormat.format(format, setters.toString()));
+		builder.append(MessageFormat.format(parent.readResource("step/impl/Execute.txt"), ""));
 	}
 }

@@ -1,5 +1,6 @@
-   /**
-    * Get the type name.
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.test.NamedType#getTypeName()
     */
    @Override
    public String getTypeName() throws Exception

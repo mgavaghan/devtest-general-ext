@@ -1,0 +1,36 @@
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.test.TestNode#execute(com.itko.lisa.test.TestExec)
+    */
+   @Override
+   public void execute(TestExec testExec) throws TestRunException
+   '{'
+      try
+      '{'
+         testExec.setLastResponse(doNodeLogic(testExec));
+
+         if (LOG.isDebugEnabled())  LOG.debug(getClass().getName() + " transaction completed.");
+      }
+      catch (Exception exc)
+      '{'
+         testExec.setLastResponse(exc.getMessage());
+         testExec.raiseEvent(TestEvent.EVENT_ABORT, getClass().getName() + " transaction failed.", exc.getMessage() + "\n" + exc.getStackTrace(), exc);
+         testExec.setNextNode("abort");
+         LOG.error(getClass().getName() + " transaction failed.", exc);
+      }
+   }
+
+   /**
+    * Do the business logic of this step.
+    *
+    * @param testExec
+    * @return
+    * @throws Exception
+    */
+   private Object doNodeLogic(TestExec testExec) throws Exception
+   '{'
+      if (LOG.isDebugEnabled())  LOG.debug(getClass().getName() + " transaction beginning.");
+      
+      // TODO Your rockin' business logic goes here
+      return null;
+   }

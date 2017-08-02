@@ -1,0 +1,77 @@
+   /** Context key. */
+   static final String STEP_KEY = "lisa.{0}.key";
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.TestNodeInfo#initNewOne()
+    */
+   @Override
+   public void initNewOne()
+   '{'
+      {0}Step node = new {0}Step();
+      putAttribute(STEP_KEY, node);
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.TestNodeInfo#getLargeIcon()
+    */
+   @Override
+   public Icon getLargeIcon()
+   '{'
+      return ModuleLegacy.resources.getIcon("icon.tctree.ftpnode.lg", new Object[0]);
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.TestNodeInfo#getSmallIcon()
+    */
+   @Override
+   public Icon getSmallIcon()
+   '{'
+      return ModuleLegacy.resources.getIcon("icon.tctree.ftpnode", new Object[0]);
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.TestNodeInfo#writeSubXML(java.io.PrintWriter)
+    */
+   @Override
+   public void writeSubXML(PrintWriter pw)
+   '{'
+      {0}Step node = ({0}Step) getAttribute(STEP_KEY);
+      node.writeSubXML(pw);
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.ControllerBase#migrate(java.lang.Object)
+    */
+   @Override
+   public void migrate(Object obj)
+   '{'
+      {0}Step node = ({0}Step) obj;
+      putAttribute(STEP_KEY, node);
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.ControllerBase#getEditorName()
+    */
+   @Override
+   public String getEditorName()
+   '{'
+      // TODO provide an editor name
+      return "{0}";
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.gui.ContextHelpSupport#getHelpString()
+    */
+   @Override
+   public String getHelpString()
+   '{'
+      // TODO provide a help string
+      return "{0}";
+   }
