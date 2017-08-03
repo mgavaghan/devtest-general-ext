@@ -4,6 +4,10 @@ import com.itko.lisa.test.ITestExec;
 
 public class ListExpander
 {
+	static private final String LIST = "@@LIST";
+
+	static private final String ENDLIST = "@@ENDLIST";
+	
 	/**
 	 * Static methods only.
 	 */
@@ -64,7 +68,7 @@ public class ListExpander
 		while (true)
 		{
 			// look for start of next list
-			start = remainder.indexOf("@@LIST", start + 1);
+			start = remainder.indexOf(LIST, start + 1);
 			if (start < 0)
 			{
 				builder.append(testExec.parseInState(remainder));
@@ -72,7 +76,7 @@ public class ListExpander
 			}
 
 			// get list parameters
-			ListArgs listArgs = getListArgs(remainder.substring(start + "@@LIST".length()));
+			ListArgs listArgs = getListArgs(remainder.substring(start + LIST.length()));
 
 			// append everything up until the list tag
 			builder.append(testExec.parseInState(text.substring(0, start)));
@@ -80,17 +84,17 @@ public class ListExpander
 			// if parameters couldn't be parsed, continue
 			if (listArgs.prefix == null)
 			{
-				builder.append(remainder.substring(start, start + "@@LIST".length() + listArgs.argEnd));
-				remainder = remainder.substring(start + "@@LIST".length() + listArgs.argEnd);
+				builder.append(remainder.substring(start, start + LIST.length() + listArgs.argEnd));
+				remainder = remainder.substring(start + LIST.length() + listArgs.argEnd);
 				start = -1;
 				continue;
 			}
 
-			start += "@@LIST".length() + listArgs.argEnd;
+			start += LIST.length() + listArgs.argEnd;
 
 			// now we have a list, so expand it and find out how much was consumed
-			StringBuilder expanded = new StringBuilder();
-			Object item = testExec.getStateObject(listArgs.key);
+			//StringBuilder expanded = new StringBuilder();
+			Object item = testExec.getStateObject(listArgs.key);	
 			
 			int consumed = expandList(builder, remainder.substring(start), testExec, listArgs.prefix, item);
 

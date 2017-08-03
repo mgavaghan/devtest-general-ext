@@ -101,8 +101,6 @@ public class App
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		args = new String[] { "src/test/resources/NewStep.json" };
-
 		// check arguments
 		if (args.length == 0)
 		{
