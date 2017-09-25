@@ -223,4 +223,15 @@ public class TracingFilter extends FilterBaseImpl
 		return false;
 	}
 
+	@Override
+	public boolean isScopeLocal()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isScopeGlobal()
+	{
+		return true;
+	}
 }
