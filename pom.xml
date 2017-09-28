@@ -39,6 +39,26 @@
 		<additionalparam>-Xdoclint:none</additionalparam>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.gavaghan</groupId>
+				<artifactId>devtest-maven-plugin</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<configuration>
+				  <devtest-home>C:\Program Files\CA\DevTest\10.1</devtest-home>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>copy-to-hotDeploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<!-- Depends on the DevTest MOAJ -->
 		<dependency>
