@@ -27,7 +27,7 @@ import com.itko.util.ParameterList;
 import com.itko.util.XMLUtils;
 
 /**
- * Publish tracing to an Active MQ topic.
+ * Publish tracing information to an Active MQ topic.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -42,7 +42,7 @@ public class TracingFilter extends FilterBaseImpl
 	static private final String BROKER_PASSWORD = "brokerPassword";
 	static private final String TOPIC = "topic";
 
-	private String mBrokerURL;
+	private String mBrokerURL = "tcp://localhost:61616";
 	private String mBrokerUsername;
 	private String mBrokerPassword;
 	private String mTopic;
@@ -152,20 +152,47 @@ public class TracingFilter extends FilterBaseImpl
 		setThreadSafe(true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.itko.lisa.test.FilterBaseImpl#getTypeName()
+	 */
 	@Override
 	public String getTypeName()
 	{
 		return "Step Tracer";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.itko.lisa.test.FilterBaseImpl#supportsDesignTimeExecution()
+	 */
+	@Override
+	public boolean supportsDesignTimeExecution()
+	{
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.itko.lisa.test.FilterBaseImpl#supportsDynamicResponseToFilter()
+	 */
+	@Override
+	public boolean supportsDynamicResponseToFilter()
+	{
+		return false;
+	}
+
 	@Override
 	public ParameterList getParameters()
 	{
 		ParameterList p = new ParameterList();
-		p.addParameter(new Parameter("Broker URL", BROKER_URL, mBrokerURL, TestExec.PROPERTY_PARAM_TYPE));
-		p.addParameter(new Parameter("Username", BROKER_USERNAME, mBrokerUsername, TestExec.PROPERTY_PARAM_TYPE));
-		p.addParameter(new Parameter("Password", BROKER_PASSWORD, mBrokerPassword, TestExec.PROPERTY_PARAM_TYPE));
-		p.addParameter(new Parameter("Topic", TOPIC, mTopic, TestExec.PROPERTY_PARAM_TYPE));
+		p.addParameter(new Parameter("Broker URL", BROKER_URL, mBrokerURL, String.class));
+		p.addParameter(new Parameter("Username", BROKER_USERNAME, mBrokerUsername, String.class));
+		p.addParameter(new Parameter("Password", BROKER_PASSWORD, mBrokerPassword, String.class));
+		p.addParameter(new Parameter("Topic", TOPIC, mTopic, String.class));
 		return p;
 	}
 
@@ -192,12 +219,12 @@ public class TracingFilter extends FilterBaseImpl
 		JSONObject json = new JSONObject();
 		json.put("type", new JSONString("trace-pre"));
 		json.put("version", new JSONString("1.0"));
-		
+
 		// add testExec
 		JSONObject testExecJSON = new JSONObject();
 		addProperties(testExecJSON, testExec);
 		json.put("testExec", testExecJSON);
-		
+
 		publishJSON(json, testExec);
 
 		return false;
@@ -212,12 +239,12 @@ public class TracingFilter extends FilterBaseImpl
 		JSONObject json = new JSONObject();
 		json.put("type", new JSONString("trace-post"));
 		json.put("version", new JSONString("1.0"));
-		
+
 		// add testExec
 		JSONObject testExecJSON = new JSONObject();
 		addProperties(testExecJSON, testExec);
 		json.put("testExec", testExecJSON);
-		
+
 		publishJSON(json, testExec);
 
 		return false;
