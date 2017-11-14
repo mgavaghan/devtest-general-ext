@@ -1,2 +1,2 @@
 # devtest-general-ext
-DevTest extensions that are generally useful
+CA DevTest extensions that are generally useful for Service Virtualization.
