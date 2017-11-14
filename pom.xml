@@ -7,9 +7,9 @@
 	<packaging>jar</packaging>
 
 	<name>org.gavaghan:devtest-general-ext</name>
-	<description>DevTest extensions that are generally useful</description>
+	<description>DevTest extensions that are generally useful.</description>
 	<url>http://maven.apache.org</url>
-
+	
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
@@ -44,9 +44,9 @@
 			<plugin>
 				<groupId>org.gavaghan</groupId>
 				<artifactId>devtest-maven-plugin</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>0.2.0</version>
 				<configuration>
-				  <devtest-home>C:\Program Files\CA\DevTest\10.1</devtest-home>
+					<devtest-home>C:\Program Files\CA\DevTest\10.1</devtest-home>
 				</configuration>
 				<executions>
 					<execution>
