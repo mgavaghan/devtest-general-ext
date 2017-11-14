@@ -75,4 +75,17 @@
 			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
+
+   <reporting>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.4</version>
+            <configuration>
+               <show>protected</show>
+            </configuration>
+         </plugin>
+      </plugins>
+   </reporting>
 </project>
