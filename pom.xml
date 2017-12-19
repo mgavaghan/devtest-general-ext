@@ -44,7 +44,7 @@
 			<plugin>
 				<groupId>org.gavaghan</groupId>
 				<artifactId>devtest-maven-plugin</artifactId>
-				<version>0.2.0</version>
+				<version>0.3.0</version>
 				<configuration>
 					<devtest-home>C:\Program Files\CA\DevTest\10.1</devtest-home>
 				</configuration>
@@ -60,7 +60,7 @@
 	</build>
 
 	<dependencies>
-		<!-- Depends on the DevTest MOAJ -->
+		<!-- Depends on the DevTest master jar -->
 		<dependency>
 			<groupId>com.ca</groupId>
 			<artifactId>devtest</artifactId>
