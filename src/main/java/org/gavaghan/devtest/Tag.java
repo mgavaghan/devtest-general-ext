@@ -1,13 +1,14 @@
 package org.gavaghan.devtest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
- * Parse a tag from a String assuming the @@ has already been found.
+ * Encapsulates a document tag (denoted by @@) and associated arguments.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -17,13 +18,13 @@ public class Tag
 	static private final Logger LOG = LogManager.getLogger(Tag.class);
 
 	/** Tag name. */
-	private String mName;
+	private final String mName;
 
 	/** Tag arguments, */
-	private List<String> mArgs;
+	private final List<String> mArgs;
 
 	/** Tag length. */
-	private int mLength;
+	private final int mLength;
 
 	/**
 	 * Create a new Tag.
@@ -35,7 +36,7 @@ public class Tag
 	public Tag(String name, List<String> args, int length)
 	{
 		mName = name;
-		mArgs = args;
+		mArgs = (args == null) ? null : Collections.unmodifiableList(args);
 		mLength = length;
 	}
 
@@ -79,6 +80,8 @@ public class Tag
 	{
 		StringBuilder builder = new StringBuilder();
 
+		if (getName() != null)  builder.append("@@");
+		
 		builder.append(getName());
 
 		if (getArguments() != null)
