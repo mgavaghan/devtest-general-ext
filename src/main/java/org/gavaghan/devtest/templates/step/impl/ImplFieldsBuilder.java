@@ -130,10 +130,14 @@ public class ImplFieldsBuilder implements MemberBuilder
 		{
 			if (first) first = false;
 			else builder.append(parent.getEOL());
+			
+			String fieldType = fields.get(key).getValue().toString();
+			String assign = "";
+			
+			if ("Boolean".equals(fieldType))  assign = " = Boolean.FALSE";
 
-			String value = (String) ((JSONString) fields.get(key)).getValue();
 			builder.append(MessageFormat.format("   /** {0} */{1}", key, parent.getEOL()));
-			builder.append(MessageFormat.format("   private {0} m{1};{2}", value, camelCase(key), parent.getEOL()));
+			builder.append(MessageFormat.format("   private {0} m{1}{3};{2}", fieldType, camelCase(key), parent.getEOL(), assign));
 		}
 	}
 }

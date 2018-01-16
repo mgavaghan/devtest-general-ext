@@ -44,16 +44,25 @@ public class WriteSubXMLBuilder implements MemberBuilder
 	{
 		String format = parent.readResource("step/impl/WriteSubXML.txt");
 		StringBuilder setters = new StringBuilder();
-		
+
 		JSONObject fields = ImplFieldsBuilder.getUnqualifiedFields(config);
 		if (fields != null)
 		{
 			for (String key : fields.keySet())
 			{
-				setters.append(MessageFormat.format("      XMLUtils.streamTagAndChild(pw, \"{0}\", get{1}());{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				String fieldType = fields.get(key).getValue().toString();
+
+				if ("Boolean".equals(fieldType))
+				{
+					setters.append(MessageFormat.format("      XMLUtils.streamTagAndChild(pw, \"{0}\", get{1}().toString());{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				}
+				else
+				{
+					setters.append(MessageFormat.format("      XMLUtils.streamTagAndChild(pw, \"{0}\", get{1}());{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				}
 			}
 		}
-		
+
 		builder.append(MessageFormat.format(format, setters.toString()));
 	}
 }

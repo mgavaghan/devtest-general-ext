@@ -53,18 +53,31 @@ public class StepInitializeBuilder implements MemberBuilder
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
 		String format = parent.readResource("step/impl/StepInitialize.txt");
-		
+
 		StringBuilder setters = new StringBuilder();
-		
+
 		JSONObject fields = ImplFieldsBuilder.getUnqualifiedFields(config);
 		if (fields != null)
 		{
 			for (String key : fields.keySet())
 			{
-				setters.append(MessageFormat.format("      set{1}(XMLUtils.findChildGetItsText(elem, \"{0}\"));{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				String fieldType = fields.get(key).getValue().toString();
+
+				if ("boolean".equals(fieldType))
+				{
+					setters.append(MessageFormat.format("      set{1}(Boolean.parseBoolean(XMLUtils.findChildGetItsText(elem, \"{0}\")));{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				}
+				else if ("Boolean".equals(fieldType))
+				{
+					setters.append(MessageFormat.format("      set{1}(Boolean.parseBoolean(XMLUtils.findChildGetItsText(elem, \"{0}\")) ? Boolean.TRUE : Boolean.FALSE);{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				}
+				else
+				{
+					setters.append(MessageFormat.format("      set{1}(XMLUtils.findChildGetItsText(elem, \"{0}\"));{2}", key, ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				}
 			}
 		}
-		
+
 		builder.append(MessageFormat.format(format, setters.toString()));
 	}
 }

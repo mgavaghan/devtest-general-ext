@@ -53,15 +53,19 @@ public class SaveAndDisplayBuilder implements MemberBuilder
 				String swingType = EditorFieldsBuilder.getUnqualifiedSwingTypeForField(field);
 				String accessor = "getText";
 				String setter = "setText";
+				String setSuffix = "";
+				String getSuffix = "";
 
 				if ("JCheckBox".equals(swingType))
 				{
 					accessor = "isSelected";
 					setter = "setSelected";
+					setSuffix = " ? Boolean.TRUE : Boolean.FALSE";
+					getSuffix = ".booleanValue()";
 				}
 
-				save.append(MessageFormat.format("      step.set{0}(get{0}().{2}());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), accessor));
-				display.append(MessageFormat.format("      get{0}().{2}(step.get{0}());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), setter));
+				save.append(MessageFormat.format("      step.set{0}(get{0}().{2}(){3});{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), accessor, setSuffix));
+				display.append(MessageFormat.format("      get{0}().{2}(step.get{0}(){3});{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), setter, getSuffix));
 			}
 		}
 
