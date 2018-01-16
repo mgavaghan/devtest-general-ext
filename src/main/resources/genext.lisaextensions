@@ -3,11 +3,17 @@
 ####################################
 nodeCategories=Gavaghan
 
-nodes=org.gavaghan.devtest.step.SaveToFileStep
+nodes=org.gavaghan.devtest.step.SaveToFileStep, \
+org.gavaghan.devtest.step.FolderWatcherStep,\
+org.gavaghan.devtest.step.FolderSaveStep
 
-Gavaghan=org.gavaghan.devtest.step.SaveToFileStep
+Gavaghan=org.gavaghan.devtest.step.SaveToFileStep, \
+org.gavaghan.devtest.step.FolderWatcherStep,\
+org.gavaghan.devtest.step.FolderSaveStep
 
 org.gavaghan.devtest.step.SaveToFileStep=org.gavaghan.devtest.step.SaveToFileController,org.gavaghan.devtest.step.SaveToFileEditor
+org.gavaghan.devtest.step.FolderWatcherStep=org.gavaghan.devtest.step.FolderWatcherController,org.gavaghan.devtest.step.FolderWatcherEditor
+org.gavaghan.devtest.step.FolderSaveStep=org.gavaghan.devtest.step.FolderSaveController,org.gavaghan.devtest.step.FolderSaveEditor
 
 ####################################
 # DevTest filters
@@ -23,10 +29,12 @@ org.gavaghan.devtest.filter.TracingFilter=com.itko.lisa.editor.FilterController,
 # VSE Traffic Protocols
 ####################################
 vseProtocols=org.gavaghan.devtest.dph.JSONResponseFormatter, \
-org.gavaghan.devtest.dph.TrafficPublisher
+org.gavaghan.devtest.dph.TrafficPublisher, \
+org.gavaghan.devtest.tph.FolderProtocol
 
 ####################################
 # Details for VSE Traffic Protocols
 ####################################
 org.gavaghan.devtest.dph.JSONResponseFormatter=data:resp,JSON Response Formatter,JSON Response Formatter
 org.gavaghan.devtest.dph.TrafficPublisher=data:req:resp,Traffic Publisher,Publishes request and response to an ActiveMQ topic
+org.gavaghan.devtest.tph.FolderProtocol=hybrid, Folder Protocol, Folder Protocol Handler
