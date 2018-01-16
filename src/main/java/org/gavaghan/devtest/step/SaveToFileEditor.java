@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -23,15 +22,12 @@ public class SaveToFileEditor extends CustomEditor
    /** Filename */
    private JTextField mFilename = new JTextField();
 
-   /** Binary */
-   private JCheckBox mBinary = new JCheckBox();
-
    /** Encoding */
    private JTextField mEncoding = new JTextField();
 
    /** Content */
    private JTextField mContent = new JTextField();
-
+   
    /**
     * Get Filename.
     *
@@ -40,16 +36,6 @@ public class SaveToFileEditor extends CustomEditor
    public JTextField getFilename()
    {
       return mFilename;
-   }
-
-   /**
-    * Get Binary.
-    *
-    * @return Binary
-    */
-   public JCheckBox getBinary()
-   {
-      return mBinary;
    }
 
    /**
@@ -80,8 +66,8 @@ public class SaveToFileEditor extends CustomEditor
    public String isEditorValid()
    {
       if (mFilename.getText().trim().length() == 0) return "Please specify a Filename";
-      if (mEncoding.getText().trim().length() == 0) return "Please specify a Encoding";
-      if (mContent.getText().trim().length() == 0) return "Please specify a Content";
+      if (mEncoding.getText().trim().length() == 0) return "Please specify an Encoding";
+      if (mContent.getText().trim().length() == 0) return "Please specify Content";
       return null;
    }
 
@@ -97,7 +83,6 @@ public class SaveToFileEditor extends CustomEditor
       SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
 
       step.setFilename(getFilename().getText());
-      step.setBinary(getBinary().isSelected());
       step.setEncoding(getEncoding().getText());
       step.setContent(getContent().getText());
    }
@@ -115,7 +100,6 @@ public class SaveToFileEditor extends CustomEditor
       SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
 
       getFilename().setText(step.getFilename());
-      getBinary().setSelected(step.getBinary());
       getEncoding().setText(step.getEncoding());
       getContent().setText(step.getContent());
    }
@@ -156,28 +140,6 @@ public class SaveToFileEditor extends CustomEditor
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       mainPanel.add(mFilename, gbc);
-
-      // add Binary label
-      gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 1;
-      gbc.gridwidth = 1;
-      gbc.weightx = 0;
-      gbc.weighty = 0;
-      gbc.anchor = GridBagConstraints.NORTHWEST;
-      gbc.fill = GridBagConstraints.HORIZONTAL;
-      mainPanel.add(new JLabel("Binary: "), gbc);
-
-      // add Binary to main panel
-      gbc = new GridBagConstraints();
-      gbc.gridx = 1;
-      gbc.gridy = 1;
-      gbc.gridwidth = 1;
-      gbc.weightx = 1;
-      gbc.weighty = 0;
-      gbc.anchor = GridBagConstraints.NORTHWEST;
-      gbc.fill = GridBagConstraints.HORIZONTAL;
-      mainPanel.add(mBinary, gbc);
 
       // add Encoding label
       gbc = new GridBagConstraints();

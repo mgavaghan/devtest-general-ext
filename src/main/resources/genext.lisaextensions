@@ -1,7 +1,11 @@
 ####################################
 # DevTest nodes
 ####################################
+nodeCategories=Gavaghan
+
 nodes=org.gavaghan.devtest.step.SaveToFileStep
+
+Gavaghan=org.gavaghan.devtest.step.SaveToFileStep
 
 org.gavaghan.devtest.step.SaveToFileStep=org.gavaghan.devtest.step.SaveToFileController,org.gavaghan.devtest.step.SaveToFileEditor
 

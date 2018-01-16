@@ -6,7 +6,7 @@
     "authorEmail": "mike@gavaghan.org",
     "fields": {
         "Filename": "String",
-        "Binary": "boolean",
+        "Binary": "Boolean",
         "Encoding": "String",
         "Content": "String"
     }

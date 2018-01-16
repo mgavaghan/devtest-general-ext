@@ -1,9 +1,11 @@
 package org.gavaghan.devtest.step;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import com.itko.lisa.test.TestCase;
@@ -27,11 +29,8 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    /** Filename */
    private String mFilename;
 
-   /** Binary */
-   private boolean mBinary;
-
    /** Encoding */
-   private String mEncoding;
+   private String mEncoding = "UTF-8";
 
    /** Content */
    private String mContent;
@@ -54,26 +53,6 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    public void setFilename(String value)
    {
       mFilename = value;
-   }
-
-   /**
-    * Get Binary.
-    *
-    * @return Binary
-    */
-   public boolean getBinary()
-   {
-      return mBinary;
-   }
-
-   /**
-    * Set Binary.
-    *
-    * @param value
-    */
-   public void setBinary(boolean value)
-   {
-      mBinary = value;
    }
 
    /**
@@ -123,8 +102,7 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    @Override
    public String getTypeName() throws Exception
    {
-      // TODO Provide a step type name
-      return "SaveToFile";
+      return "Save To File";
    }
 
    /*
@@ -135,7 +113,6 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    public void initialize(TestCase testCase, Element elem) throws TestDefException
    {
       setFilename(XMLUtils.findChildGetItsText(elem, "Filename"));
-      //setBinary(XMLUtils.findChildGetItsText(elem, "Binary"));
       setEncoding(XMLUtils.findChildGetItsText(elem, "Encoding"));
       setContent(XMLUtils.findChildGetItsText(elem, "Content"));
    }
@@ -148,7 +125,6 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    public void writeSubXML(PrintWriter pw)
    {
       XMLUtils.streamTagAndChild(pw, "Filename", getFilename());
-      //XMLUtils.streamTagAndChild(pw, "Binary", getBinary());
       XMLUtils.streamTagAndChild(pw, "Encoding", getEncoding());
       XMLUtils.streamTagAndChild(pw, "Content", getContent());
    }
@@ -186,7 +162,17 @@ public class SaveToFileStep extends TestNode implements CloneImplemented
    {
       if (LOG.isDebugEnabled())  LOG.debug(getClass().getName() + " transaction beginning.");
       
-      // TODO Your rockin' business logic goes here
-      return null;
+      String filename = testExec.parseInState(mFilename);
+      String encoding = testExec.parseInState(mEncoding);
+      String content = testExec.parseInState(mContent);
+      
+      try (FileOutputStream fos = new FileOutputStream(filename); OutputStreamWriter osw = new OutputStreamWriter(fos, encoding))
+      {
+      	osw.write(content);
+      	osw.flush();
+      	fos.flush();
+      }
+      
+      return content;
    }
 }

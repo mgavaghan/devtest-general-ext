@@ -76,8 +76,7 @@ public class SaveToFileController extends TestNodeInfo
    @Override
    public String getEditorName()
    {
-      // TODO provide an editor name
-      return "SaveToFile";
+      return "Save To File";
    }
 
    /*
@@ -87,7 +86,6 @@ public class SaveToFileController extends TestNodeInfo
    @Override
    public String getHelpString()
    {
-      // TODO provide a help string
-      return "SaveToFile";
+      return "Save To File";
    }
 }
