@@ -9,7 +9,7 @@
    }
 
    /**
-    * Set {0}/
+    * Set {0}.
     *
     * @param value
     */

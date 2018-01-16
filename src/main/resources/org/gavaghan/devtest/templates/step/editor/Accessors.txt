@@ -3,7 +3,7 @@
     *
     * @return {0}
     */
-   public JTextField get{1}()
+   public {2} get{1}()
    '{'
       return m{1};
    }

@@ -1,4 +1,11 @@
 ####################################
+# DevTest nodes
+####################################
+nodes=org.gavaghan.devtest.step.SaveToFileStep
+
+org.gavaghan.devtest.step.SaveToFileStep=org.gavaghan.devtest.step.SaveToFileController,org.gavaghan.devtest.step.SaveToFileEditor
+
+####################################
 # DevTest filters
 ####################################
 filters=org.gavaghan.devtest.filter.TracingFilter

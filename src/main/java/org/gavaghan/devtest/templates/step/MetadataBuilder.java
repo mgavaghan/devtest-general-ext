@@ -2,6 +2,7 @@ package org.gavaghan.devtest.templates.step;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.FileBuilder;
@@ -23,7 +24,7 @@ public class MetadataBuilder extends FileBuilder
 	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
 	 */
 	@Override
-	public List<String> getPackages(JSONObject config)
+	public Set<String> getPackages(JSONObject config)
 	{
 		return null;
 	}

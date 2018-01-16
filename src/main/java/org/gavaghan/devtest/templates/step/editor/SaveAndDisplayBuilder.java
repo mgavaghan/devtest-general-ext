@@ -1,14 +1,15 @@
 package org.gavaghan.devtest.templates.step.editor;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.devtest.templates.step.impl.ImplFieldsBuilder;
 import org.gavaghan.json.JSONObject;
+import org.gavaghan.json.JSONValue;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -19,7 +20,7 @@ import com.ibm.icu.text.MessageFormat;
 public class SaveAndDisplayBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
-	static private final List<String> sPackages = new ArrayList<String>();
+	static private final Set<String> sPackages = new HashSet<String>();
 
 	/*
 	 * (non-Javadoc)
@@ -29,7 +30,7 @@ public class SaveAndDisplayBuilder implements MemberBuilder
 	 * json.JSONObject)
 	 */
 	@Override
-	public List<String> getPackages(JSONObject config) throws BuilderException
+	public Set<String> getPackages(JSONObject config) throws BuilderException
 	{
 		return sPackages;
 	}
@@ -48,8 +49,19 @@ public class SaveAndDisplayBuilder implements MemberBuilder
 		{
 			for (String key : fields.keySet())
 			{
-				save.append(MessageFormat.format("      step.set{0}(get{0}().getText());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL()));
-				display.append(MessageFormat.format("      get{0}().setText(step.get{0}());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL()));
+				JSONValue field = fields.get(key);
+				String swingType = EditorFieldsBuilder.getUnqualifiedSwingTypeForField(field);
+				String accessor = "getText";
+				String setter = "setText";
+
+				if ("JCheckBox".equals(swingType))
+				{
+					accessor = "isSelected";
+					setter = "setSelected";
+				}
+
+				save.append(MessageFormat.format("      step.set{0}(get{0}().{2}());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), accessor));
+				display.append(MessageFormat.format("      get{0}().{2}(step.get{0}());{1}", ImplFieldsBuilder.camelCase(key), parent.getEOL(), setter));
 			}
 		}
 

@@ -2,15 +2,15 @@ package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.json.JSONObject;
-import org.gavaghan.json.JSONString;
+import org.gavaghan.json.JSONValue;
 
 /**
  * Render step accessors.
@@ -20,7 +20,7 @@ import org.gavaghan.json.JSONString;
 public class ImplAccessorsBuilder implements MemberBuilder
 {
 	/** The list of packages this builder depends on. */
-	static private final List<String> sPackages = Collections.unmodifiableList(new ArrayList<String>());
+	static private final Set<String> sPackages = Collections.unmodifiableSet(new HashSet<String>());
 
 	/*
 	 * (non-Javadoc)
@@ -28,7 +28,7 @@ public class ImplAccessorsBuilder implements MemberBuilder
 	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
 	 */
 	@Override
-	public List<String> getPackages(JSONObject config)
+	public Set<String> getPackages(JSONObject config)
 	{
 		return sPackages;
 	}
@@ -48,8 +48,12 @@ public class ImplAccessorsBuilder implements MemberBuilder
 			if (first)  first = false;
 			else builder.append(parent.getEOL());
 
-			String value = (String) ((JSONString) fields.get(key)).getValue();
-			builder.append(MessageFormat.format(format, key, ImplFieldsBuilder.camelCase(key), value));
+			JSONValue fieldType = fields.get(key);
+			String value = fieldType.getValue().toString();		
+			
+			String content = MessageFormat.format(format, key, ImplFieldsBuilder.camelCase(key), value);
+			
+			builder.append(content);
 		}
 	}
 }

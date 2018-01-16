@@ -1,6 +1,6 @@
 package org.gavaghan.devtest.templates;
 
-import java.util.List;
+import java.util.Set;
 
 import org.gavaghan.json.JSONObject;
 
@@ -18,5 +18,5 @@ public interface HasDependencies
 	 * @return
 	 * @throws BuilderException
 	 */
-	public List<String> getPackages(JSONObject config) throws BuilderException;
+	public Set<String> getPackages(JSONObject config) throws BuilderException;
 }

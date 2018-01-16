@@ -1,11 +1,13 @@
 {
     "type": "Step",
-    "name": "NewFunctionality",
-    "package": "com.example.test",
+    "name": "SaveToFile",
+    "package": "org.gavaghan.devtest.step",
     "author": "Mike Gavaghan",
-    "authorEmail": "mike.gavaghan@ca.com",
+    "authorEmail": "mike@gavaghan.org",
     "fields": {
-        "foo": "java.lang.String",
-        "bar": "String"
+        "Filename": "String",
+        "Binary": "boolean",
+        "Encoding": "String",
+        "Content": "String"
     }
 }

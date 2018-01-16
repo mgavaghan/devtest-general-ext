@@ -2,8 +2,8 @@ package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.gavaghan.devtest.templates.BuilderException;
 import org.gavaghan.devtest.templates.MemberBuilder;
@@ -90,9 +90,9 @@ public class ImplFieldsBuilder implements MemberBuilder
 	 * @see org.gavaghan.devtest.templates.HasDependencies#getPackages()
 	 */
 	@Override
-	public List<String> getPackages(JSONObject config) throws BuilderException
+	public Set<String> getPackages(JSONObject config) throws BuilderException
 	{
-		List<String> packs = new ArrayList<String>();
+		Set<String> packs = new HashSet<String>();
 
 		// look for fields
 		JSONObject fields = getFields(config);
@@ -112,21 +112,25 @@ public class ImplFieldsBuilder implements MemberBuilder
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.gavaghan.devtest.templates.MemberBuilder#build(org.gavaghan.devtest.templates.TemplateBuilder, org.gavaghan.json.JSONObject, java.lang.StringBuilder)
+	 * 
+	 * @see
+	 * org.gavaghan.devtest.templates.MemberBuilder#build(org.gavaghan.devtest.
+	 * templates.TemplateBuilder, org.gavaghan.json.JSONObject,
+	 * java.lang.StringBuilder)
 	 */
 	@Override
 	public void build(TemplateBuilder parent, JSONObject config, StringBuilder builder) throws BuilderException, IOException
 	{
 		JSONObject fields = getUnqualifiedFields(config);
 		if (fields == null) return;
-		
+
 		boolean first = true;
 
 		for (String key : fields.keySet())
 		{
-			if (first)  first = false;
+			if (first) first = false;
 			else builder.append(parent.getEOL());
-			
+
 			String value = (String) ((JSONString) fields.get(key)).getValue();
 			builder.append(MessageFormat.format("   /** {0} */{1}", key, parent.getEOL()));
 			builder.append(MessageFormat.format("   private {0} m{1};{2}", value, camelCase(key), parent.getEOL()));
