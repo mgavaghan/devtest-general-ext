@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 
 import javax.swing.Icon;
 
-import com.itko.lisa.core.ModuleLegacy;
 import com.itko.lisa.editor.TestNodeInfo;
 
 /**
@@ -34,7 +33,7 @@ public class SaveToFileController extends TestNodeInfo
    @Override
    public Icon getLargeIcon()
    {
-      return ModuleLegacy.resources.getIcon("icon.tctree.ftpnode.lg", new Object[0]);
+      return SaveToFileIcons.getLargeIcon();
    }
 
    /*
@@ -44,7 +43,7 @@ public class SaveToFileController extends TestNodeInfo
    @Override
    public Icon getSmallIcon()
    {
-      return ModuleLegacy.resources.getIcon("icon.tctree.ftpnode", new Object[0]);
+      return SaveToFileIcons.getSmallIcon();
    }
 
    /*
