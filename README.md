@@ -29,7 +29,7 @@ Alternatively, you can point to the private DevTest repository.  Please add this
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>http://sombrita.com:8080/maven2</url>
+			<url>http://www.gavaghan.org/maven</url>
 			<layout>default</layout>
 		</repository>
 	</repositories>
@@ -47,7 +47,7 @@ Alternatively, you can point to the private DevTest repository.  Please add this
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>http://sombrita.com:8080/maven2</url>
+			<url>http://www.gavaghan.org/maven</url>
 			<layout>default</layout>
 		</pluginRepository>
 	</pluginRepositories>
