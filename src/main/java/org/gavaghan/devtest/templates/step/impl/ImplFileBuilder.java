@@ -1,6 +1,7 @@
 package org.gavaghan.devtest.templates.step.impl;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,6 @@ import org.gavaghan.devtest.templates.Log4JBuilder;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.json.JSONObject;
-
-import com.ibm.icu.text.MessageFormat;
 
 /**
  * 

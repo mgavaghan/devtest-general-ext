@@ -1,12 +1,11 @@
 package org.gavaghan.devtest.templates;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.gavaghan.json.JSONObject;
-
-import com.ibm.icu.text.MessageFormat;
 
 /**
  * The Log4j member.

@@ -1,6 +1,7 @@
 package org.gavaghan.devtest.templates.step;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -9,8 +10,6 @@ import org.gavaghan.devtest.templates.FileBuilder;
 import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.json.JSONObject;
-
-import com.ibm.icu.text.MessageFormat;
 
 /**
  * Create the *.lisaextensions file.

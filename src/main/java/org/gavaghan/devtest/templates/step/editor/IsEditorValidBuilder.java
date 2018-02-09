@@ -1,6 +1,7 @@
 package org.gavaghan.devtest.templates.step.editor;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,8 +10,6 @@ import org.gavaghan.devtest.templates.MemberBuilder;
 import org.gavaghan.devtest.templates.TemplateBuilder;
 import org.gavaghan.devtest.templates.step.impl.ImplFieldsBuilder;
 import org.gavaghan.json.JSONObject;
-
-import com.ibm.icu.text.MessageFormat;
 
 /**
  * 

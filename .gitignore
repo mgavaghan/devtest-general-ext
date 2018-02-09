@@ -19,6 +19,8 @@ target/
 .classpath
 .project
 
+batch/NewStep.json
+
 *.suo
 
 # Package Files #
