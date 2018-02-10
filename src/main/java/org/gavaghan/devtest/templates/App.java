@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 import org.gavaghan.devtest.templates.step.StepTemplateBuilder;
+import org.gavaghan.json.CommentedJSONValueFactory;
 import org.gavaghan.json.JSONException;
 import org.gavaghan.json.JSONObject;
-import org.gavaghan.json.JSONValueFactory;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class App
 
 		try (InputStream fis = new FileInputStream(filename); InputStreamReader isr = new InputStreamReader(fis, "UTF-8"))
 		{
-			config = (JSONObject) JSONValueFactory.DEFAULT.read(isr);
+			config = (JSONObject) CommentedJSONValueFactory.COMMENTED_DEFAULT.read(isr);
 		}
 		catch (FileNotFoundException exc)
 		{
