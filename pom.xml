@@ -46,7 +46,7 @@
 				<artifactId>devtest-maven-plugin</artifactId>
 				<version>0.3.0</version>
 				<configuration>
-					<devtest-home>C:\Program Files\CA\DevTest\10.1</devtest-home>
+					<devtest-home>${devtest.home}</devtest-home>
 				</configuration>
 				<executions>
 					<execution>
