@@ -18,14 +18,12 @@ org.gavaghan.devtest.step.FolderSaveStep=org.gavaghan.devtest.step.FolderSaveCon
 ####################################
 # DevTest filters
 ####################################
-filters=org.gavaghan.devtest.filter.TracingFilter, \
-org.gavaghan.devtest.filter.XPathFilter
+filters=org.gavaghan.devtest.filter.TracingFilter
 
 ####################################
 # Details for DevTest filters
 ####################################
 org.gavaghan.devtest.filter.TracingFilter=com.itko.lisa.editor.FilterController,com.itko.lisa.editor.DefaultFilterEditor
-org.gavaghan.devtest.filter.XPathFilter=org.gavaghan.devtest.filter.XPathFilterController,org.gavaghan.devtest.filter.XPathFilterEditor
 
 ####################################
 # VSE Traffic Protocols
