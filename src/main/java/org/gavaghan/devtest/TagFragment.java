@@ -1,12 +1,12 @@
 package org.gavaghan.devtest;
 
 /**
- * Encapsulates a document fragment containing untagged content followed by a
- * Tag.
+ * Basic ITagFragment implementation - simple untagged content followed by a
+ * tag.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
-public class TagFragment
+public class TagFragment implements ITagFragment
 {
 	/** Preceding untagged content. */
 	private final String mContent;
@@ -31,6 +31,7 @@ public class TagFragment
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getContent()
 	{
 		return mContent;
@@ -41,6 +42,7 @@ public class TagFragment
 	 * 
 	 * @return
 	 */
+	@Override
 	public Tag getTag()
 	{
 		return mTag;
@@ -60,7 +62,7 @@ public class TagFragment
 		if (mContent.length() != 0) builder.append("\n");
 		builder.append(mTag);
 		builder.append("\n");
-		
+
 		return builder.toString();
 	}
 }

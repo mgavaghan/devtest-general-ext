@@ -3,28 +3,29 @@ package org.gavaghan.devtest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Encapsulates a document fragment containing untagged content followed by a
- * Tag.
+ * Tag.  Tags are preceded by @@
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 public class TaggedDocument
 {
 	/** The list of fragments making up this document. */
-	private final List<TagFragment> mFrags;
+	private final List<ITagFragment> mFrags;
 
 	/** The trailing, untagged content. */
 	private final String mTrailer;
-
+	
 	/**
 	 * Create a new TaggedDocument.
 	 * 
 	 * @param frags
 	 * @param trailer
 	 */
-	public TaggedDocument(List<TagFragment> frags, String trailer)
+	public TaggedDocument(List<ITagFragment> frags, String trailer)
 	{
 		mFrags = (frags == null) ? null : Collections.unmodifiableList(frags);
 		mTrailer = trailer;
@@ -35,7 +36,7 @@ public class TaggedDocument
 	 * 
 	 * @return
 	 */
-	public List<TagFragment> getTagFragments()
+	public List<ITagFragment> getTagFragments()
 	{
 		return mFrags;
 	}
@@ -60,7 +61,7 @@ public class TaggedDocument
 	{
 		StringBuilder builder = new StringBuilder();
 
-		for (TagFragment frag : getTagFragments())
+		for (ITagFragment frag : getTagFragments())
 		{
 			builder.append(frag);
 		}
@@ -82,7 +83,21 @@ public class TaggedDocument
 	 */
 	static public TaggedDocument read(String text)
 	{
-		List<TagFragment> mFrags = new ArrayList<TagFragment>();
+		return read(text, null);
+	}
+
+	/**
+	 * Read a tagged document.
+	 * 
+	 * @param text
+	 * @param understood
+	 *           the set of tag names that are understood. 'null' means parse all
+	 *           tags.
+	 * @return
+	 */
+	static public TaggedDocument read(String text, Set<String> understood)
+	{
+		List<ITagFragment> mFrags = new ArrayList<ITagFragment>();
 		StringBuilder content = new StringBuilder();
 		int i = 0;
 
@@ -118,7 +133,7 @@ public class TaggedDocument
 				content.append(text.substring(i, start));
 
 				Tag tag = Tag.read(text.substring(start + 2));
-				if (tag.getName() != null)
+				if (tag.getName() != null && ((understood == null) || (understood.contains(tag.getName()))))
 				{
 					TagFragment frag = new TagFragment(content.toString(), tag);
 
