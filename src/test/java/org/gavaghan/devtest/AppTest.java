@@ -3,7 +3,10 @@ package org.gavaghan.devtest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.itko.lisa.test.ITestExec;
 
@@ -51,17 +54,45 @@ public class AppTest
 
 		ListDocument doc = ListDocument.read(content);
 
-		//writeFrags(">", doc.getTagFragments());
-
-		//System.out.println(doc.getTrailer());
+		//if (true)  return;
 		
+		// writeFrags(">", doc.getTagFragments());
+
+		// System.out.println(doc.getTrailer());
+
 		ListDocumentRenderer ldr = new ListDocumentRenderer();
 		ITestExec testExec = new TestTestExec();
-		
+
 		testExec.setStateValue("color", "blue");
+
+		// create the list to render
+		List<Map<String, Object>> names = new ArrayList<Map<String, Object>>();
+		testExec.setStateValue("names", names);
+
+		//
+		Map<String, Object> map = new HashMap<String, Object>();
+		ArrayList<Map<String, Object>> nestedList = new ArrayList<Map<String, Object>>();
+		map.put("color", "red");
+		map.put("size", "large");
+		map.put("nested", nestedList);
+		names.add(map);
 		
+		map = new HashMap<String, Object>();
+		map.put("number", new Integer(9));
+		nestedList.add(map);
+
+		//
+		map = new HashMap<String, Object>();
+		map.put("color", "green");
+		map.put("size", "medium");
+		names.add(map);
+      
+		//
+		map = new HashMap<String, Object>();
+		map.put("color", "white");
+		map.put("size", "small");
+		names.add(map);
+
 		System.out.println(ldr.render(doc, testExec));
-		
-		//System.out.println(testExec.parseInState(content));
 	}
 }

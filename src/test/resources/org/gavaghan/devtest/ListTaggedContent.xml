@@ -1,22 +1,23 @@
 <outer>
    <test>{{color}}</test>
    <inner>
-      @@LIST(name,prefix_foo)
+      @@LIST(names,foo)
       <listItem>
-         <first>{{prefix_foo_color}}</first>
-         <index>{{prefix_foo_index}}</index>
-         @@LIST(nested, prefix_bar)
+         <first>{{foo_color}}</first>
+         <second>{{foo_size}}</second>
+         <index>{{foo_index}}</index>
+         @@LIST(foo_nested, bar)
          <nested>
-            <index>{{prefix_bar_index}}</index>
+            <index>{{bar_index}}</index>
             <someContent>Hello, World!@@NOTATAG</someContent>
-            <second>{{prefix_bar_number}}</second>
+            <second>{{bar_number}}</second>
          </nested>
          @@ENDLIST
       </listItem>
       @@ENDLIST
    </inner>
    <next>
-      @@LIST(label,foo)
+      @@LIST(labels,foo)
       <test/>
       @@ENDLIST
    </next>

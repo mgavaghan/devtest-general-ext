@@ -20,7 +20,6 @@ public class ListDocument extends TaggedDocument implements ITagFragment
 	{
 		sUnderstood.add("LIST");
 		sUnderstood.add("ENDLIST");
-		sUnderstood.add("INDEX");
 	}
 
 	/** The list tag that encloses this document. */
