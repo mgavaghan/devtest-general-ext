@@ -1,6 +1,7 @@
 package org.gavaghan.devtest.step;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -187,6 +188,17 @@ public class SSHExecuteEditor extends CustomEditor
 		getPrivateKey().setText(step.getPrivateKey());
 		getPassphrase().setText(step.getPassphrase());
 	}
+	
+	private JLabel getLabel(String text, String tip)
+	{
+		JLabel label = new JLabel(text);
+		Font font = label.getFont();
+		
+		label.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()));
+		label.setToolTipText(tip);
+		
+		return label;
+	}
 
 	/**
 	 * Build the UI.
@@ -212,7 +224,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Username: "), gbc);
+		mainPanel.add(getLabel("Username: ", "Specify user to login as"), gbc);
 
 		// add Username to main panel
 		gbc = new GridBagConstraints();
@@ -234,7 +246,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Hostname: "), gbc);
+		mainPanel.add(getLabel("Hostname: ", "Specify remote hostname"), gbc);
 
 		// add Hostname to main panel
 		gbc = new GridBagConstraints();
@@ -256,7 +268,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Port: "), gbc);
+		mainPanel.add(getLabel("Port: ", "Specify SSH port"), gbc);
 
 		// add Port to main panel
 		gbc = new GridBagConstraints();
@@ -278,7 +290,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Timeout: "), gbc);
+		mainPanel.add(getLabel("Timeout (sec): ", "Specify socket timeout in seconds"), gbc);
 
 		// add Timeout to main panel
 		gbc = new GridBagConstraints();
@@ -300,7 +312,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Command: "), gbc);
+		mainPanel.add(getLabel("Command: ", "Specify the command to execute"), gbc);
 
 		// add Command to main panel
 		gbc = new GridBagConstraints();
@@ -322,7 +334,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Password: "), gbc);
+		mainPanel.add(getLabel("Password: ", "(Optional) Specify password if using password authentication"), gbc);
 
 		// add Password to main panel
 		gbc = new GridBagConstraints();
@@ -344,7 +356,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("PrivateKey: "), gbc);
+		mainPanel.add(getLabel("Private Key: ", "(Optional) Path to private key file if using private key authentication"), gbc);
 
 		// add PrivateKey to main panel
 		gbc = new GridBagConstraints();
@@ -366,7 +378,7 @@ public class SSHExecuteEditor extends CustomEditor
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		mainPanel.add(new JLabel("Passphrase: "), gbc);
+		mainPanel.add(getLabel("Passphrase: ", "(Optional) Passphrase for private key"), gbc);
 
 		// add Passphrase to main panel
 		gbc = new GridBagConstraints();
