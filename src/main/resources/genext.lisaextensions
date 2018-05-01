@@ -30,7 +30,8 @@ org.gavaghan.devtest.filter.TracingFilter=com.itko.lisa.editor.FilterController,
 ####################################
 vseProtocols=org.gavaghan.devtest.dph.JSONResponseFormatter, \
 org.gavaghan.devtest.dph.TrafficPublisher, \
-org.gavaghan.devtest.tph.FolderProtocol
+org.gavaghan.devtest.tph.FolderProtocol, \
+org.gavaghan.devtest.dph.ListProcessorHandler
 
 ####################################
 # Details for VSE Traffic Protocols
@@ -38,3 +39,5 @@ org.gavaghan.devtest.tph.FolderProtocol
 org.gavaghan.devtest.dph.JSONResponseFormatter=data:resp,JSON Response Formatter,JSON Response Formatter
 org.gavaghan.devtest.dph.TrafficPublisher=data:req:resp,Traffic Publisher,Publishes request and response to an ActiveMQ topic
 org.gavaghan.devtest.tph.FolderProtocol=hybrid, Folder Protocol, Folder Protocol Handler
+org.gavaghan.devtest.dph.ListProcessorHandler=data:resp,List Processor,Handle list components in a request or response
+

@@ -50,10 +50,10 @@ public class ListDocumentRenderer
 				Tag tag = subdoc.getTag();
 				List<String> args = tag.getArguments();
 
-				if (args.size() == 2)
+				if ((args.size() == 1) || (args.size() == 2))
 				{
 					String listName = args.get(0);
-					String prefix = args.get(1);
+					String prefix = (args.size() == 2) ? args.get(1) : null;
 					Object listObject = testExec.getStateValue(listName);
 
 					// only render if the state value is a List instance
@@ -68,12 +68,12 @@ public class ListDocumentRenderer
 							{
 								// put map values into state
 								Map<String, Object> values = (Map) itemObj;
-								String prefixUnder = prefix + "_";
+								String prefixUnder = (prefix != null) ? (prefix + "_") : "";
 
 								for (String key : values.keySet())
 								{
 									testExec.setStateValue(prefixUnder + key, values.get(key));
-									if (LOG.isDebugEnabled())  LOG.debug("Setting state value: " + prefixUnder + key);
+									if (LOG.isDebugEnabled()) LOG.debug("Setting state value: " + prefixUnder + key);
 								}
 								testExec.setStateValue(prefixUnder + "index", new Integer(index));
 
@@ -84,7 +84,7 @@ public class ListDocumentRenderer
 								for (String key : values.keySet())
 								{
 									testExec.removeState(prefixUnder + key);
-									if (LOG.isDebugEnabled())  LOG.debug("Removing state value: " + prefixUnder + key);
+									if (LOG.isDebugEnabled()) LOG.debug("Removing state value: " + prefixUnder + key);
 								}
 								testExec.removeState(prefixUnder + "index");
 								index++;

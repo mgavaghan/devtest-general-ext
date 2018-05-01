@@ -9,7 +9,7 @@
 	<name>org.gavaghan:devtest-general-ext</name>
 	<description>DevTest extensions that are generally useful.</description>
 	<url>http://maven.apache.org</url>
-	
+
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
@@ -74,18 +74,25 @@
 			<artifactId>gavaghan-json</artifactId>
 			<version>1.1.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.54</version>
+		</dependency>
 	</dependencies>
 
-   <reporting>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
-            <configuration>
-               <show>protected</show>
-            </configuration>
-         </plugin>
-      </plugins>
-   </reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<show>protected</show>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
