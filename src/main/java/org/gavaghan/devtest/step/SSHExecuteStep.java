@@ -1,8 +1,13 @@
 package org.gavaghan.devtest.step;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Properties;
+
+import javax.crypto.Cipher;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,7 +28,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
- *
+ * Remotely execute a single command via SSH.
+ * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 public class SSHExecuteStep extends TestNode implements CloneImplemented
@@ -91,7 +97,8 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 	static
 	{
 		// We're going to force the initialization of some JSch objects.
-		// Otherwise, and initial execution takes a long time to complete
+		// Otherwise, and initial execution takes a long time to complete. Then
+		// again, there's evidence this is actually a network issue. RESEARCH!
 		Runnable init = new Runnable()
 		{
 			@Override
@@ -101,7 +108,7 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 
 				try
 				{
-					javax.crypto.Cipher.getInstance("AES/CTR/NoPadding");
+					Cipher.getInstance("AES/CTR/NoPadding");
 
 					DHG14 kex = new DHG14();
 					kex.init(jsch.getSession("localhost"), null, null, null, null);
@@ -370,6 +377,34 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 	}
 
 	/**
+	 * Load a file.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws IOException
+	 */
+	private byte[] loadFile(String filename) throws IOException
+	{
+		byte[] content;
+		byte[] buffer = new byte[4096];
+
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(filename))
+		{
+			for (;;)
+			{
+				int got = fis.read(buffer);
+				if (got < 0) break;
+
+				baos.write(buffer, 0, got);
+			}
+
+			content = baos.toByteArray();
+		}
+
+		return content;
+	}
+
+	/**
 	 * Get configuration to build the session.
 	 * 
 	 * @param password
@@ -420,29 +455,39 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 	{
 		if (LOG.isDebugEnabled()) LOG.debug(getClass().getName() + " transaction beginning.");
 
-		testExec.removeState("ssh.execute.exit.status");
-
 		Session session = null;
 		ChannelExec channel = null;
 		String response;
+		String stderr;
 
-		// ensure the preload has completed
-		waitForPreload();
+		// remove old state
+		testExec.removeState("ssh.execute.exit.status");
+		testExec.removeState("ssh.execute.stderr");
 
 		// expand parameters
 		String username = nullSafe(testExec.parseInState(mUsername));
 		String hostname = nullSafe(testExec.parseInState(mHostname));
 		int port = Integer.parseInt(nullSafe(testExec.parseInState(mPort)));
-		int timeout = Integer.parseInt(nullSafe(testExec.parseInState(mTimeout))) * 1000;
+		int timeout = Integer.parseInt(nullSafe(testExec.parseInState(mTimeout))) * 1000; // convert
+																														// to
+																														// millis
 		String command = nullSafe(testExec.parseInState(mCommand));
 		String password = nullSafe(testExec.parseInState(mPassword));
 		String privateKey = nullSafe(testExec.parseInState(mPrivateKey));
 		String passphrase = nullSafe(testExec.parseInState(mPassphrase));
-		
+
+		// ensure the preload has completed
+		waitForPreload();
+
 		// create the JSch
 		JSch jsch = new JSch();
 
-		// FIXME add identities
+		// add identities
+		if (privateKey.length() > 0)
+		{
+			byte[] pkBytes = loadFile(privateKey);
+			jsch.addIdentity(username, pkBytes, new byte[0], passphrase.getBytes());
+		}
 
 		// create the configuration
 		Properties config = getConfiguration(password, privateKey);
@@ -452,7 +497,7 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 			// create the session object
 			session = jsch.getSession(username, hostname, port);
 			session.setConfig(config);
-			session.setTimeout(timeout); // seconds or millis? pretend it's millis
+			session.setTimeout(timeout);
 			if (password.length() > 0) session.setPassword(password);
 
 			if (LOG.isDebugEnabled())
@@ -468,20 +513,22 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 			session.connect();
 
 			// open the channel
-			LOG.info("About to open channel");
+			LOG.debug("About to open channel");
 			channel = (ChannelExec) session.openChannel("exec");
 
 			// set the command
 			if (LOG.isInfoEnabled()) LOG.info("About to set command to: " + mCommand);
 			channel.setCommand(command);
 
+			ByteArrayOutputStream stderrStr = new ByteArrayOutputStream();
+
 			channel.setInputStream(null);
-			channel.setErrStream(System.err);
+			channel.setErrStream(stderrStr);
 
 			InputStream in = channel.getInputStream();
 
 			// connect
-			LOG.info("About to connect");
+			LOG.debug("About to connect");
 			channel.connect();
 
 			// read the response
@@ -516,6 +563,7 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 			}
 
 			response = builder.toString();
+			stderr = new String(stderrStr.toByteArray());
 		}
 		catch (JSchException exc)
 		{
@@ -526,6 +574,8 @@ public class SSHExecuteStep extends TestNode implements CloneImplemented
 			if (channel != null) channel.disconnect();
 			if (session != null) session.disconnect();
 		}
+
+		testExec.setStateValue("ssh.execute.stderr", stderr);
 
 		return response;
 	}
