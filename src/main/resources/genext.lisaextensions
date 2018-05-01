@@ -5,15 +5,18 @@ nodeCategories=Gavaghan
 
 nodes=org.gavaghan.devtest.step.SaveToFileStep, \
 org.gavaghan.devtest.step.FolderWatcherStep,\
-org.gavaghan.devtest.step.FolderSaveStep
+org.gavaghan.devtest.step.FolderSaveStep, \
+org.gavaghan.devtest.step.SSHExecuteStep
 
 Gavaghan=org.gavaghan.devtest.step.SaveToFileStep, \
 org.gavaghan.devtest.step.FolderWatcherStep,\
-org.gavaghan.devtest.step.FolderSaveStep
+org.gavaghan.devtest.step.FolderSaveStep, \
+org.gavaghan.devtest.step.SSHExecuteStep
 
 org.gavaghan.devtest.step.SaveToFileStep=org.gavaghan.devtest.step.SaveToFileController,org.gavaghan.devtest.step.SaveToFileEditor
 org.gavaghan.devtest.step.FolderWatcherStep=org.gavaghan.devtest.step.FolderWatcherController,org.gavaghan.devtest.step.FolderWatcherEditor
 org.gavaghan.devtest.step.FolderSaveStep=org.gavaghan.devtest.step.FolderSaveController,org.gavaghan.devtest.step.FolderSaveEditor
+org.gavaghan.devtest.step.SSHExecuteStep=org.gavaghan.devtest.step.SSHExecuteController,org.gavaghan.devtest.step.SSHExecuteEditor
 
 ####################################
 # DevTest filters
