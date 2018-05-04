@@ -6,11 +6,11 @@ import java.io.PrintWriter;
  *
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
-public class SSHExecuteController extends SSHControllerBase
+public class SFTPController extends SSHControllerBase
 {
    /** Context key. */
-   static final String STEP_KEY = "lisa.SSHExecute.key";
-
+   static final String STEP_KEY = "lisa.SFTP.key";
+ 
    @Override
    String getStepKey()
    {
@@ -24,7 +24,7 @@ public class SSHExecuteController extends SSHControllerBase
    @Override
    public void initNewOne()
    {
-      SSHExecuteStep node = new SSHExecuteStep();
+      SFTPStep node = new SFTPStep();
       putAttribute(STEP_KEY, node);
    }
 
@@ -35,7 +35,7 @@ public class SSHExecuteController extends SSHControllerBase
    @Override
    public void writeSubXML(PrintWriter pw)
    {
-      SSHExecuteStep node = (SSHExecuteStep) getAttribute(STEP_KEY);
+      SFTPStep node = (SFTPStep) getAttribute(STEP_KEY);
       node.writeSubXML(pw);
    }
 
@@ -46,7 +46,7 @@ public class SSHExecuteController extends SSHControllerBase
    @Override
    public void migrate(Object obj)
    {
-      SSHExecuteStep node = (SSHExecuteStep) obj;
+      SFTPStep node = (SFTPStep) obj;
       putAttribute(STEP_KEY, node);
    }
 
@@ -57,7 +57,7 @@ public class SSHExecuteController extends SSHControllerBase
    @Override
    public String getEditorName()
    {
-      return "SSH Execute";
+      return "SFTP";
    }
 
    /*
@@ -67,6 +67,6 @@ public class SSHExecuteController extends SSHControllerBase
    @Override
    public String getHelpString()
    {
-      return "SSH Execute";
+      return "SFTP";
    }
 }
