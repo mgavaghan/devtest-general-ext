@@ -1,6 +1,5 @@
 package org.gavaghan.devtest.filter;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -214,7 +213,8 @@ public class TracingFilter extends FilterBaseImpl
 	public boolean subPreFilter(TestExec testExec) throws TestRunException
 	{
 		LOG.debug("ENTER - subPreFilter()");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// TODO add date to JSON
+		// SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
 		json.put("type", new JSONString("trace-pre"));
@@ -234,7 +234,8 @@ public class TracingFilter extends FilterBaseImpl
 	public boolean subPostFilter(TestExec testExec) throws TestRunException
 	{
 		LOG.debug("ENTER - subPostFilter()");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// TODO add date to JSON
+		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		JSONObject json = new JSONObject();
 		json.put("type", new JSONString("trace-post"));

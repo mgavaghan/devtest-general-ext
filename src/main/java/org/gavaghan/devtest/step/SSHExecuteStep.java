@@ -171,6 +171,7 @@ public class SSHExecuteStep extends SSHStepBase
 			channel.setInputStream(null);
 			channel.setErrStream(stderrStr);
 
+			@SuppressWarnings("resource")
 			InputStream in = channel.getInputStream();
 
 			// connect

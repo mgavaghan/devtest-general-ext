@@ -68,12 +68,12 @@ public class FolderSaveStep extends BaseRespondStep
 	/**
 	 * Set the response property.
 	 * 
-	 * @param name
+	 * @param responseList
 	 */
 	@Override
-	public void setResponseListProperty(String name)
+	public void setResponseListProperty(String responseList)
 	{
-		mResponseProperty = name;
+		mResponseProperty = responseList;
 	}
 
 	/**
@@ -89,11 +89,11 @@ public class FolderSaveStep extends BaseRespondStep
 	/**
 	 * Set the filename property.
 	 * 
-	 * @param name
+	 * @param filename
 	 */
-	public void setFilenameProperty(String name)
+	public void setFilenameProperty(String filename)
 	{
-		mFilenameProperty = name;
+		mFilenameProperty = filename;
 	}
 
 	/**
@@ -109,11 +109,11 @@ public class FolderSaveStep extends BaseRespondStep
 	/**
 	 * Set the target folder.
 	 * 
-	 * @param name
+	 * @param targetFolder
 	 */
-	public void setTargetFolder(String name)
+	public void setTargetFolder(String targetFolder)
 	{
-		mTargetFolder = name;
+		mTargetFolder = targetFolder;
 	}
 
 	/*
