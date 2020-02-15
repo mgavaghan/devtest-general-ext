@@ -1,8 +1,6 @@
 package org.gavaghan.devtest.autostep;
 
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +13,7 @@ import com.itko.lisa.test.TestExec;
 import com.itko.lisa.test.TestRunException;
 
 /**
+ * Base class for DevTest steps that are defined declaratively.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -22,64 +21,78 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
 {
    /** Our logger */
    static private final Logger LOG = LogManager.getLogger(AutoStep.class);
+   
+   /** Shorthand for the AutoStep class object. */
+   static private final Class<?> THIS;
 
-   /** Convention constant for reflection. */
+   /** Convenient constant for reflection. */
    static private final Class<?>[] NO_PARAMS = new Class<?>[0];
    
-   /** Load our resources. **/
-   static private final ResourceBundle sResources = ResourceBundle.getBundle(AutoStep.class.getName());
+   static
+   {
+      THIS = AutoStep.class;
+   }
 
    /** Our concrete type. */
-   private final Class<?> mSubclass;
+   private final Class<?> mSubClass;
 
    /** The value to be returned by getTypeName() */
-   private final String mTypeName;
+   private String mTypeName;
 
    /** Last response if subtype overrides it. */
    private Object mLastResponse = null;
 
    /**
-    * Get a local specific string for the given key.
+    * Resolve the type name by looking for @TypeName or an override of
+    * getTypeName().
     * 
-    * @param key resource bundle key
-    * @param args message arguments
-    * @return the formatted string
+    * @throws NoSuchMethodException
     */
-   private String getString(String key, Object... args)
+   private void reflectTypeName() throws NoSuchMethodException
    {
-      return MessageFormat.format(sResources.getString(key), args);
+      Method method = mSubClass.getMethod("getTypeName", NO_PARAMS);
+      TypeName typeName = mSubClass.getAnnotation(TypeName.class);
+
+      // if there's not @TypeName, make sure getTypeName() is overridden
+      if ((typeName == null) && method.getDeclaringClass().equals(AutoStep.class))
+      {
+         throw new RuntimeException(AutoStepUtils.getString(THIS, "NoTypeName", mSubClass.getSimpleName()));
+      }
+
+      // if @TypeName wants to be localized
+      if ((typeName != null) && typeName.localized())
+      {
+         mTypeName = AutoStepUtils.getString(mSubClass, typeName.value());
+      }
+      // else, take the literal value
+      else
+      {
+         mTypeName = (typeName != null) ? typeName.value() : null;
+      }
    }
 
    /**
-    * 
+    * Start reflecting on the concrete type 
     */
    protected AutoStep()
    {
       try
       {
          // get concrete type
-         mSubclass = getClass();
-         if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubclass.getName());
+         mSubClass = getClass();
+         if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
 
-         // handle @TypeName
-         Method method = mSubclass.getMethod("getTypeName", NO_PARAMS);
-         TypeName typeName = mSubclass.getAnnotation(TypeName.class);
+         reflectTypeName();
 
-         mTypeName = (typeName != null) ? typeName.value() : null;
-
-         if ((typeName == null) && method.getDeclaringClass().equals(AutoStep.class))
-         {
-            throw new RuntimeException(getString("NoTypeName", mSubclass.getSimpleName()));
-         }
       }
       catch (RuntimeException | NoSuchMethodException exc)
       {
-         String text = getString("FailedToInstantiate", getClass().getName());
+         String text = AutoStepUtils.getString(THIS, "FailedToInstantiate", getClass().getName());
          LOG.fatal(text, exc);
          throw new RuntimeException(text, exc);
       }
    }
-   
+
    /**
     * Override the default last response. If this was previously set in
     * doNodeLogic() but an exception is thrown, you must call this again during
