@@ -20,7 +20,14 @@ import com.itko.util.CloneImplemented;
 import com.itko.util.XMLUtils;
 
 /**
- * Base class for DevTest steps that are defined declaratively.
+ * <p>Base class for DevTest steps that are defined declaratively.</p>
+ * 
+ * Required annotation on subtype are:
+ * 
+ * @@Typename - the name of the step type
+ * @@Property - one or more properties on the step
+ * @@EditorName - the name of the step editor
+ * @@HelpString - the editor help string
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -56,7 +63,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    /** The context key. */
    private String mStepKey;
 
-   // FIXME makes this one big map to Property (doesn't work for description due to defaults and localization)
+   // TODO makes this one big map to Property (doesn't work for description due to defaults and localization)
 
    /** Map of property names to their value. */
    private final Map<String, Object> mPropValues = new HashMap<String, Object>();
@@ -282,16 +289,6 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    }
 
    /**
-    * Do the logic of this step. To override the default last response value, call
-    * setLastRespone().
-    * 
-    * @param testExec test state
-    * @return default last response for the node
-    * @throws Exception on any unhandled exception
-    */
-   protected abstract Object doNodeLogic(TestExec testExec) throws Exception;
-
-   /**
     * Wraps call to doNodeLogic() to handle last response, events, and exceptions
     * 
     * @param testExec test state
@@ -500,4 +497,14 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          throw exc;
       }
    }
+
+   /**
+    * Do the logic of this step. To override the default last response value, call
+    * setLastRespone().
+    * 
+    * @param testExec test state
+    * @return default last response for the node
+    * @throws Exception on any unhandled exception
+    */
+   protected abstract Object doNodeLogic(TestExec testExec) throws Exception;
 }

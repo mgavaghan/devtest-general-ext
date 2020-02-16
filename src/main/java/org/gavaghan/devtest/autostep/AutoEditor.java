@@ -1,11 +1,16 @@
 package org.gavaghan.devtest.autostep;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.slf4j.Logger;
@@ -14,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.itko.lisa.editor.CustomEditor;
 
 /**
+ * Base class for DevTest editors that are defined declaratively.
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
@@ -57,7 +63,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
    /**
     * Find all of the properties from the step's @Property annotations and select
-    * UI Components
+    * UI Components.
     */
    private void reflectStepProperties()
    {
@@ -112,15 +118,67 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    }
 
    /**
-    * Build the UI
+    * Build the UI.
     */
-   protected abstract void setupEditor();
+   protected void setupEditor()
+   {
+      GridBagConstraints gbc;
+      
+      // build the main editor panel
+      JPanel mainPanel = new JPanel(new GridBagLayout());
+      setMinimumSize(new Dimension(300, 300));
+      
+      int row = 0;
+
+      for (String propName : mPropByName.keySet())
+      {
+         Property prop = mPropByName.get(propName);
+         
+         // FIXME what if it's a checkbox?
+         
+         // add the label
+         gbc = new GridBagConstraints();
+         gbc.gridx = 0;
+         gbc.gridy = row;
+         gbc.gridwidth = 1;
+         gbc.weightx = 0;
+         gbc.weighty = 0;
+         gbc.anchor = GridBagConstraints.NORTHWEST;
+         gbc.fill = GridBagConstraints.HORIZONTAL;
+         mainPanel.add(new JLabel(mPrototype.getDescription(prop.name())), gbc);
+         
+         // add the component
+         gbc = new GridBagConstraints();
+         gbc.gridx = 1;
+         gbc.gridy = row;
+         gbc.gridwidth = 1;
+         gbc.weightx = 1;
+         gbc.weighty = 0;
+         gbc.anchor = GridBagConstraints.NORTHWEST;
+         gbc.fill = GridBagConstraints.HORIZONTAL;
+         mainPanel.add(getComponent(prop.name()), gbc);
+         
+         row++;
+      }
+
+      // add main panel to editor
+      setLayout(new GridBagLayout());
+      gbc = new GridBagConstraints();
+      gbc.gridx = 0;
+      gbc.gridy = 0;
+      gbc.weightx = 1;
+      gbc.weighty = 1;
+      gbc.anchor = GridBagConstraints.NORTHWEST;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      add(mainPanel, gbc);
+   }
 
    /**
-    * Create the UI component for the Property.
+    * Create the UI component for the Property. Subclasses may override this to
+    * create custom JComponents.
     * 
-    * @param property
-    * @return
+    * @param property the property of the field to create a component for.
+    * @return the new component.
     */
    protected JComponent createComponent(Property property)
    {
@@ -158,7 +216,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     * @param propName property name
     * @return the JComponent
     */
-   protected JComponent getComponent(String propName)
+   protected final JComponent getComponent(String propName)
    {
       Objects.requireNonNull(propName);
 
@@ -173,22 +231,23 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    }
 
    /**
-    * Determine if a parameter is valid
+    * Determine if a populated component has a valid value. Subclasses may override
+    * this to perform custom validation.
     * 
-    * @param text
-    * @param klass
-    * @return
+    * @param text  the text to validate
+    * @param klass the target data type
+    * @return a String describing why the value is invalid, or 'null' if valid
     */
-   protected boolean isValid(Property prop, String text)
+   protected String isValid(Property prop, String text)
    {
       try
       {
          AutoStepUtils.parseString(text, prop.type());
-         return true;
+         return null;
       }
       catch (IllegalArgumentException exc)
       {
-         return false;
+         return getString("ValueNotValid", mPrototype.getDescription(prop.name()));
       }
    }
 
@@ -197,17 +256,16 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     * 
     * @return the context key
     */
-   public String getStepKey()
+   public final String getStepKey()
    {
       return mStepKey;
    }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#save()
+   /**
+    * Save the contents of the editor to a step.
     */
    @Override
-   public void save()
+   public final void save()
    {
       AutoController controller = (AutoController) getController();
       controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
@@ -224,12 +282,14 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#isEditorValid()
+   /**
+    * Determine if the contents of the editor are valid. Subclasses may customize
+    * this by overriding isValid().
+    * 
+    * @return a String describing why the editor is invalid, or 'null' if valid
     */
    @Override
-   public String isEditorValid()
+   public final String isEditorValid()
    {
       for (String propName : mPropByName.keySet())
       {
@@ -246,13 +306,15 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
                // make sure mandatory fields are populated
                if (prop.mandatory())
                {
-                  return "Please specify '" + mPrototype.getDescription(propName) + "'";
+                  return getString("ValueMissing", mPrototype.getDescription(propName));
                }
             }
             // make sure populated fields are valid
-            else if (!isValid(prop, text))
+            else
             {
-               return "Please specify a valid value for '" + mPrototype.getDescription(propName) + "'";
+               String warning = isValid(prop, text);
+
+               if (warning != null) return warning;
             }
          }
       }
@@ -260,12 +322,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       return null;
    }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#display()
+   /**
+    * Display the editor.
     */
    @Override
-   public void display()
+   public final void display()
    {
       if (!mInit) setupEditor();
 
