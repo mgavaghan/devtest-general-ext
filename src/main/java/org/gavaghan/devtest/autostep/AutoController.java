@@ -77,6 +77,11 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
          throw new RuntimeException(text, exc);
       }
    }
+   
+   public String getStepKey()
+   {
+      return mStepKey;
+   }
 
    /*
     * (non-Javadoc)
