@@ -27,7 +27,7 @@ public class AutoStepUtils
 {
    /** Logger. */
    static private final Logger LOG = LoggerFactory.getLogger(AutoStepUtils.class);
-   
+
    /** Map class types to their resource bundles. */
    static private final Map<Class<?>, ResourceBundle> sBundles = new HashMap<Class<?>, ResourceBundle>();
 
@@ -198,7 +198,48 @@ public class AutoStepUtils
          LOG.debug("reflected = " + retval);
          LOG.debug("reflectSimpleGetter() - EXIT");
       }
-      
+
+      return retval;
+   }
+
+   /**
+    * Parse a string into a specified type.
+    * 
+    * @param text
+    * @param klass
+    * @throws IllegalArgumentException if value could not be parsed
+    * @return
+    */
+   @SuppressWarnings("boxing")
+   static public Object parseString(String text, Class<?> klass) throws IllegalArgumentException
+   {
+      Object retval = null;
+
+      // NOTE this could be turned into a map
+      if (String.class.equals(klass))
+      {
+         retval = text;
+      }
+      else if (Boolean.class.equals(klass))
+      {
+         retval = Boolean.parseBoolean(text);
+      }
+      else if (Integer.class.equals(klass))
+      {
+         try
+         {
+            retval = Integer.parseInt(text);
+         }
+         catch (NumberFormatException ignored)
+         {
+         }
+      }
+
+      if (retval == null)
+      {
+         throw new IllegalArgumentException(getString(AutoStep.class, "FailedToParse", text, klass));
+      }
+
       return retval;
    }
 }

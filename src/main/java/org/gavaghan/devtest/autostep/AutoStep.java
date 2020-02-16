@@ -55,6 +55,8 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    
    /** The context key. */
    private String mStepKey;
+   
+   // FIXME makes this one big map to Property (doesn't work for description due to defaults and localization)
 
    /** Map of property names to their value. */
    private final Map<String, Object> mPropValues = new HashMap<String, Object>();
@@ -78,24 +80,6 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    private String getString(String key, Object... args)
    {
       return AutoStepUtils.getString(AutoStep.class, key, args);
-   }
-
-   /**
-    * Parse a string into a specified type.
-    * 
-    * @param text
-    * @param klass
-    * @return
-    */
-   @SuppressWarnings("boxing")
-   private Object parseString(String text, Class<?> klass)
-   {
-      // NOTE this could be turned into a map as well
-      if (String.class.equals(klass)) return text;
-      if (Boolean.class.equals(klass)) return Boolean.parseBoolean(text);
-      if (Integer.class.equals(klass)) return Integer.parseInt(text);
-
-      throw new IllegalArgumentException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
    }
 
    /**
@@ -277,7 +261,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     * @throws Exception on any unhandled exception
     */
    protected abstract Object doNodeLogic(TestExec testExec) throws Exception;
-
+   
    /**
     * Wraps call to doNodeLogic() to handle last response, events, and exceptions
     * 
@@ -323,6 +307,21 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       }
    }
    
+   /**
+    * Get the description of a property.
+    * 
+    * @param propName the propery name
+    * @return the description string
+    */
+   String getDescription(String propName)
+   {
+      String descr = mPropDescr.get(propName);
+      
+      if (descr == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
+      
+      return descr;
+   }
+
    /**
     * Get the context key for this instance.
     * 
@@ -399,7 +398,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
             
             try
             {
-               newValue = parseString((String) assignValue, targetType.getClass());
+               newValue = AutoStepUtils.parseString((String) assignValue, targetType.getClass());
                assignValue = newValue;
             }
             catch (IllegalArgumentException exc)
@@ -439,7 +438,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
             if (text == null) continue;
 
             Class<?> propType = mPropTypes.get(propName);
-            Object value = parseString(text, propType);
+            Object value = AutoStepUtils.parseString(text, propType);
 
             setProperty(propName, value);
          }

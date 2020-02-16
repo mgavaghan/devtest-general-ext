@@ -8,67 +8,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.itko.lisa.editor.CustomEditor;
+import org.gavaghan.devtest.autostep.AutoEditor;
 
 /**
  *
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
-public class SaveToFileEditor extends CustomEditor
+public class SaveToFileEditor extends AutoEditor<SaveToFileStep>
 {
    /** Initialized flag. */
-  private boolean mInit = false;
+   private boolean mInit = false;
 
-   /** Filename */
-   private JTextField mFilename = new JTextField();
-
-   /** Encoding */
-   private JTextField mEncoding = new JTextField();
-
-   /** Content */
-   private JTextField mContent = new JTextField();
-   
-   /**
-    * Get Filename.
-    *
-    * @return Filename
-    */
-   public JTextField getFilename()
+   public SaveToFileEditor()
    {
-      return mFilename;
-   }
-
-   /**
-    * Get Encoding.
-    *
-    * @return Encoding
-    */
-   public JTextField getEncoding()
-   {
-      return mEncoding;
-   }
-
-   /**
-    * Get Content.
-    *
-    * @return Content
-    */
-   public JTextField getContent()
-   {
-      return mContent;
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#isEditorValid()
-    */
-   @Override
-   public String isEditorValid()
-   {
-      if (mFilename.getText().trim().length() == 0) return "Please specify a Filename";
-      if (mEncoding.getText().trim().length() == 0) return "Please specify an Encoding";
-      if (mContent.getText().trim().length() == 0) return "Please specify Content";
-      return null;
+      super(SaveToFileStep.class);
    }
 
    /*
@@ -80,11 +33,12 @@ public class SaveToFileEditor extends CustomEditor
    {
       SaveToFileController controller = (SaveToFileController) getController();
       controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
-      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(controller.getStepKey());
+      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(getStepKey());
 
-      step.setProperty("filename", getFilename().getText());
-      step.setProperty("encoding", getEncoding().getText());
-      step.setProperty("content", getContent().getText());
+      // FIXME - these might not be text fields
+      step.setProperty("filename", ((JTextField) getComponent("filename")).getText());
+      step.setProperty("encoding", ((JTextField) getComponent("encoding")).getText());
+      step.setProperty("content", ((JTextField) getComponent("content")).getText());
    }
 
    /*
@@ -99,9 +53,10 @@ public class SaveToFileEditor extends CustomEditor
       SaveToFileController controller = (SaveToFileController) getController();
       SaveToFileStep step = (SaveToFileStep) controller.getAttribute(controller.getStepKey());
 
-      getFilename().setText((String) step.getProperty("filename"));
-      getEncoding().setText((String) step.getProperty("encoding"));
-      getContent().setText((String) step.getProperty("content"));
+      // FIXME - these might not be JTextFields
+      ((JTextField) getComponent("filename")).setText((String) step.getProperty("filename"));
+      ((JTextField) getComponent("encoding")).setText((String)  step.getProperty("encoding"));
+      ((JTextField) getComponent("content")).setText((String) step.getProperty("content"));
    }
 
    /**
@@ -109,16 +64,16 @@ public class SaveToFileEditor extends CustomEditor
     */
    private void setupEditor()
    {
-      if (mInit)  return;
-      
+      if (mInit) return;
+
       mInit = true;
 
       GridBagConstraints gbc;
 
       // build the main editor panel
       JPanel mainPanel = new JPanel(new GridBagLayout());
-      setMinimumSize(new Dimension(300,300));
-      
+      setMinimumSize(new Dimension(300, 300));
+
       // add Filename label
       gbc = new GridBagConstraints();
       gbc.gridx = 0;
@@ -139,7 +94,7 @@ public class SaveToFileEditor extends CustomEditor
       gbc.weighty = 0;
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
-      mainPanel.add(mFilename, gbc);
+      mainPanel.add(getComponent("filename"), gbc);
 
       // add Encoding label
       gbc = new GridBagConstraints();
@@ -161,7 +116,7 @@ public class SaveToFileEditor extends CustomEditor
       gbc.weighty = 0;
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
-      mainPanel.add(mEncoding, gbc);
+      mainPanel.add(getComponent("encoding"), gbc);
 
       // add Content label
       gbc = new GridBagConstraints();
@@ -173,7 +128,7 @@ public class SaveToFileEditor extends CustomEditor
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       mainPanel.add(new JLabel("Content: "), gbc);
-
+      
       // add Content to main panel
       gbc = new GridBagConstraints();
       gbc.gridx = 1;
@@ -183,8 +138,8 @@ public class SaveToFileEditor extends CustomEditor
       gbc.weighty = 0;
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
-      mainPanel.add(mContent, gbc);
- 
+      mainPanel.add(getComponent("content"), gbc);
+
       // add main panel to editor
       this.setLayout(new GridBagLayout());
       gbc = new GridBagConstraints();
