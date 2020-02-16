@@ -21,7 +21,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 {
    /** Logger. */
    static private final Logger LOG = LoggerFactory.getLogger(AutoStep.class);
-   
+
    /** Initialized flag. */
    private boolean mInit = false;
 
@@ -144,7 +144,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          throw new RuntimeException(text, exc);
       }
    }
-   
+
    /**
     * Build the UI
     */
@@ -186,7 +186,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
       return comp;
    }
-   
+
    /**
     * Get the JComponent for the property name.
     * 
@@ -206,9 +206,10 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
       return comp;
    }
-   
+
    /**
     * Determine if a parameter is valid
+    * 
     * @param text
     * @param klass
     * @return
@@ -220,7 +221,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          AutoStepUtils.parseString(text, prop.type());
          return true;
       }
-      catch(IllegalArgumentException exc)
+      catch (IllegalArgumentException exc)
       {
          return false;
       }
@@ -235,7 +236,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    {
       return mStepKey;
    }
-   
+
    /*
     * (non-Javadoc)
     * @see com.itko.lisa.editor.CustomEditor#save()
@@ -250,10 +251,10 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       for (String propName : mPropByName.keySet())
       {
          JComponent comp = ((JTextField) getComponent(propName));
-         
+
          // FIXME - this could actually be a JComponent
          Object value = ((JTextField) comp).getText();
-         
+
          step.setProperty(propName, value);
       }
    }
@@ -267,8 +268,6 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    {
       for (String propName : mPropByName.keySet())
       {
-         // FIXME handle mandatories
-
          Property prop = mPropByName.get(propName);
          JComponent comp = getComponent(propName);
 
@@ -276,18 +275,23 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          if (comp instanceof JTextField)
          {
             String text = ((JTextField) comp).getText().trim();
-            
+
             if (text.length() == 0)
             {
-               return "Please specify '" + mPrototype.getDescription(propName) + "'";
+               // make sure mandatory fields are populated
+               if (prop.mandatory())
+               {
+                  return "Please specify '" + mPrototype.getDescription(propName) + "'";
+               }
             }
+            // make sure populated fields are valid
             else if (!isValid(prop, text))
             {
                return "Please specify a valid value for '" + mPrototype.getDescription(propName) + "'";
             }
          }
       }
-      
+
       return null;
    }
 
@@ -299,17 +303,17 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    public void display()
    {
       if (!mInit) setupEditor();
-      
+
       mInit = true;
 
       AutoController controller = (AutoController) getController();
       AutoStep step = (AutoStep) controller.getAttribute(controller.getStepKey());
-      
+
       for (String propName : mPropByName.keySet())
       {
          JComponent comp = getComponent(propName);
          Object value = step.getProperty(propName);
-         
+
          // FIXME - this might not be a JTextField
          ((JTextField) comp).setText((String) value);
       }

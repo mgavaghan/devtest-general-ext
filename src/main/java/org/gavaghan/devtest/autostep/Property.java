@@ -20,10 +20,10 @@ public @interface Property {
    /**
     * The name of the property.
     */
-   String value();
-   
+   String name();
+
    /**
-    * The data type of the property.  Defaults to String.class  
+    * The data type of the property. Defaults to String.class
     */
    Class<?> type() default String.class;
 
@@ -42,9 +42,16 @@ public @interface Property {
    String description() default "";
 
    /**
-    * Flag indicating if 'description' is a resource bundle key.
-    *  
+    * Flag indicating if 'description' is a resource bundle key. Defaults to false.
+    * 
     * @return 'true' if using a resource bundle
     */
    boolean localized() default false;
+
+   /**
+    * Indicates if a field is mandatory.  Defaults to true.
+    * 
+    * @return 'true' if mandatory
+    */
+   boolean mandatory() default true;
 }

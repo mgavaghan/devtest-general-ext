@@ -16,9 +16,9 @@ import com.itko.lisa.test.TestExec;
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 @TypeName("Save To File")
-@Property(value = "filename", description = "Filename")
-@Property(value = "encoding", description = "Encoding")  // FIXME this should default to UTF-8
-@Property(value = "content", description = "Content")
+@Property(name = "filename", description = "Filename")
+@Property(name = "encoding", description = "Encoding")  // FIXME this should default to UTF-8
+@Property(name = "content", description = "Content")
 public class SaveToFileStep extends AutoStep
 {
    /** Our logger */
