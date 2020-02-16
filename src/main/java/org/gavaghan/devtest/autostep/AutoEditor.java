@@ -73,40 +73,6 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
             // create the component for this property
             JComponent comp = createComponent(prop);
             mPropComponents.put(prop.name(), comp);
-
-            /*
-            String propName = prop.value();
-            Class<?> propType = prop.type();
-            String descr = prop.description();
-            
-            // check if value should be boxed
-            Class<?> box = sBoxedTypes.get(propType);
-            
-            if (box != null)
-            {
-               LOG.warn(getString("Boxing", propName, box.getSimpleName()));
-            
-               propType = box;
-            }
-            
-            // look for duplicate name in descriptions
-            if (mPropDescr.containsKey(propName))
-            {
-               throw new RuntimeException(getString("DupeProperty", propName, mSubClass.getName()));
-            }
-            
-            // add description
-            if (descr.length() == 0) descr = propName; // default
-            if (prop.localized()) descr = AutoStepUtils.getString(mSubClass, descr);
-            mPropDescr.put(propName, descr);
-            if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + propName + ": " + descr);
-            
-            // add default values
-            mPropValues.put(propName, getDefault(propType));
-            
-            // add type
-            mPropTypes.put(propName, propType);
-            */
          }
       }
       else
@@ -153,8 +119,6 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    /**
     * Create the UI component for the Property.
     * 
-    * FIXME support default values
-    * 
     * @param property
     * @return
     */
@@ -163,21 +127,22 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       Class<?> propType = property.type();
       JComponent comp;
 
+      // initialize a String in a text field
       if (String.class.equals(propType))
       {
          // FIXME support password fields
          // FIXME support text areas
          comp = new JTextField("");
       }
+      // initialize a String in an int property as long as it parses
       else if (Integer.class.equals(propType))
       {
          comp = new JTextField("");
       }
+      // initialize a String in an boolean property
       else if (Boolean.class.equals(propType))
       {
-         // FIXME select description from step
-         // FIXME allow string alternative
-         comp = new JCheckBox("");
+         comp = new JCheckBox(mPrototype.getDescription(property.name()));
       }
       else
       {

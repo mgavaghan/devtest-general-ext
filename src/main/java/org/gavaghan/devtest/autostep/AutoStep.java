@@ -52,10 +52,10 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
 
    /** The value to be returned by getTypeName() */
    private final String mTypeName;
-   
+
    /** The context key. */
    private String mStepKey;
-   
+
    // FIXME makes this one big map to Property (doesn't work for description due to defaults and localization)
 
    /** Map of property names to their value. */
@@ -88,13 +88,42 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     * @param klass a supported class
     * @return new instance of type klass
     */
-   private Object getDefault(Class<?> klass)
+   private Object getDefault(Property prop)
    {
-      Object value = sDefaultInitialValues.get(klass);
+      Class<?> propType = prop.type();
+      Object value = sDefaultInitialValues.get(propType);
+      String initial = prop.initial().trim();
 
-      if (value == null)
+      if (value == null) throw new RuntimeException(getString("TypeNotSupported", prop.type().getName(), mSubClass.getName()));
+      
+      if (initial.length() > 0)
       {
-         throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
+         // TODO this could be made more efficient
+         
+         // set initial value of a String property
+         if (String.class.equals(propType))
+         {
+            value = initial;
+         }
+         
+         // set initial value an Integer property as long as it parses
+         else if (Integer.class.equals(propType))
+         {
+            try
+            {
+               value = AutoStepUtils.parseString(initial, propType);
+            }
+            catch (IllegalArgumentException exc)
+            {
+               LOG.error(initial + " could not be parsed as an Integer");
+            }
+         }
+         
+         // initialize a String in an boolean property
+         else if (Boolean.class.equals(propType))
+         {
+            value = AutoStepUtils.parseString(initial, propType);
+         }
       }
 
       return value;
@@ -156,9 +185,9 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       {
          for (Property prop : props.value())
          {
-            String propName = prop.name();
-            Class<?> propType = prop.type();
-            String descr = prop.description();
+            String propName = prop.name(); // property name
+            Class<?> propType = prop.type(); // property type
+            String descr = prop.description(); // property descriptions before calculating default
 
             // check if value should be boxed
             Class<?> box = sBoxedTypes.get(propType);
@@ -183,7 +212,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
             if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + propName + ": " + descr);
 
             // add default values
-            mPropValues.put(propName, getDefault(propType));
+            mPropValues.put(propName, getDefault(prop));
 
             // add type
             mPropTypes.put(propName, propType);
@@ -206,13 +235,13 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          // get concrete type
          mSubClass = getClass();
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
-         
+
          // build the step key
          mStepKey = "lisa." + mSubClass.getName() + ".key";
-         
+
          LOG.debug("About to reflect TypeName");
          mTypeName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getTypeName", TypeName.class);
-         
+
          LOG.debug("About to reflect properties");
          reflectProperties();
       }
@@ -261,7 +290,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     * @throws Exception on any unhandled exception
     */
    protected abstract Object doNodeLogic(TestExec testExec) throws Exception;
-   
+
    /**
     * Wraps call to doNodeLogic() to handle last response, events, and exceptions
     * 
@@ -306,7 +335,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          mLastResponse = null;
       }
    }
-   
+
    /**
     * Get the description of a property.
     * 
@@ -316,9 +345,9 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    String getDescription(String propName)
    {
       String descr = mPropDescr.get(propName);
-      
+
       if (descr == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
-      
+
       return descr;
    }
 
@@ -385,7 +414,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
 
       Class<?> targetType = mPropTypes.get(propName);
       if (targetType == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
-      
+
       Object assignValue = value;
 
       // make sure object matches type
@@ -395,7 +424,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          if (String.class.equals(assignValue.getClass()))
          {
             Object newValue;
-            
+
             try
             {
                newValue = AutoStepUtils.parseString((String) assignValue, targetType.getClass());
@@ -403,7 +432,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
             }
             catch (IllegalArgumentException exc)
             {
-               if (LOG.isDebugEnabled())  LOG.debug("Failed to coerce '" + (String) value + ", into a '" + targetType.getSimpleName());
+               if (LOG.isDebugEnabled()) LOG.debug("Failed to coerce '" + (String) value + ", into a '" + targetType.getSimpleName());
                throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), targetType.getSimpleName()), exc);
             }
          }

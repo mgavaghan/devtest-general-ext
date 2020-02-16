@@ -61,5 +61,5 @@ public @interface Property {
     * 
     * @return
     */
-   String initialValue() default "";
+   String initial() default "";
 }

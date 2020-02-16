@@ -12,18 +12,22 @@ import org.gavaghan.devtest.autostep.TypeName;
 import com.itko.lisa.test.TestExec;
 
 /**
- *
+ * Save content to the filesystem.
+ * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 @TypeName("Save To File")
 @Property(name = "filename", description = "Filename")
-@Property(name = "encoding", description = "Encoding")  // FIXME this should default to UTF-8
+@Property(name = "encoding", description = "Encoding", initial="UTF-8")
 @Property(name = "content", description = "Content")
 public class SaveToFileStep extends AutoStep
 {
    /** Our logger */
    static private final Logger LOG = LogManager.getLogger(SaveToFileStep.class);
 
+   /**
+    * Create new SaveToFileStep.
+    */
    public SaveToFileStep()
    {
       LOG.debug("Constructing SaveToFileStep");
