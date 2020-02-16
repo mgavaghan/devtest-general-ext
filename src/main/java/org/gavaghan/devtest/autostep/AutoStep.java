@@ -95,7 +95,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       if (Boolean.class.equals(klass)) return Boolean.parseBoolean(text);
       if (Integer.class.equals(klass)) return Integer.parseInt(text);
 
-      throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
+      throw new IllegalArgumentException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
    }
 
    /**
@@ -386,13 +386,34 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
 
       Class<?> propType = mPropTypes.get(propName);
       if (propType == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
+      
+      Object assignValue = value;
 
+      // make sure object matches type
       if (!propType.isAssignableFrom(value.getClass()))
       {
-         throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()));
+         if (String.class.equals(value.getClass()))
+         {
+            Object newValue;
+            
+            try
+            {
+               newValue = parseString((String) assignValue, assignValue.getClass());
+               assignValue = newValue;
+            }
+            catch (IllegalArgumentException exc)
+            {
+               if (LOG.isDebugEnabled())  LOG.debug("Failed to coerce '" + (String) value + ", into a '" + propType.getSimpleName());
+               throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()), exc);
+            }
+         }
+         else
+         {
+            throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()));
+         }
       }
 
-      mPropValues.put(propName, value);
+      mPropValues.put(propName, assignValue);
    }
 
    /**
