@@ -51,7 +51,10 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    private final Class<?> mSubClass;
 
    /** The value to be returned by getTypeName() */
-   private String mTypeName;
+   private final String mTypeName;
+   
+   /** The context key. */
+   private String mStepKey;
 
    /** Map of property names to their value. */
    private final Map<String, Object> mPropValues = new HashMap<String, Object>();
@@ -220,6 +223,9 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          mSubClass = getClass();
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
          
+         // build the step key
+         mStepKey = "lisa." + mSubClass.getName() + ".key";
+         
          LOG.debug("About to reflect TypeName");
          mTypeName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getTypeName", TypeName.class);
          
@@ -315,6 +321,16 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       {
          mLastResponse = null;
       }
+   }
+   
+   /**
+    * Get the context key for this instance.
+    * 
+    * @return the context key
+    */
+   public String getStepKey()
+   {
+      return mStepKey;
    }
 
    /**
