@@ -26,23 +26,6 @@ public class SaveToFileEditor extends AutoEditor<SaveToFileStep>
 
    /*
     * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#save()
-    */
-   @Override
-   public void save()
-   {
-      SaveToFileController controller = (SaveToFileController) getController();
-      controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
-      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(getStepKey());
-
-      // FIXME - these might not be text fields
-      step.setProperty("filename", ((JTextField) getComponent("filename")).getText());
-      step.setProperty("encoding", ((JTextField) getComponent("encoding")).getText());
-      step.setProperty("content", ((JTextField) getComponent("content")).getText());
-   }
-
-   /*
-    * (non-Javadoc)
     * @see com.itko.lisa.editor.CustomEditor#display()
     */
    @Override

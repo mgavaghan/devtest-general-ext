@@ -179,6 +179,28 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       return comp;
    }
 
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.CustomEditor#save()
+    */
+   @Override
+   public void save()
+   {
+      AutoController controller = (AutoController) getController();
+      controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
+      AutoStep step = (AutoStep) controller.getAttribute(getStepKey());
+
+      for (String propName : mPropByName.keySet())
+      {
+         JComponent comp = ((JTextField) getComponent(propName));
+         
+         // FIXME - this could actually be a JComponent
+         Object value = ((JTextField) comp).getText();
+         
+         step.setProperty(propName, value);
+      }
+   }
+   
    /**
     * Get the JComponent for the property name.
     * 
