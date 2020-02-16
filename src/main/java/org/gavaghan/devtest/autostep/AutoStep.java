@@ -375,7 +375,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     * @param propName property name
     * @return parsed property value - never a null.
     */
-   public Object getParsedProperty(TestExec testExec, String propName)
+   public String getParsedProperty(TestExec testExec, String propName)
    {
       Object value = getProperty(propName);
       
