@@ -21,6 +21,9 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 {
    /** Logger. */
    static private final Logger LOG = LoggerFactory.getLogger(AutoStep.class);
+   
+   /** Initialized flag. */
+   private boolean mInit = false;
 
    /** Map of property names to their UI components. */
    private final Map<String, JComponent> mPropComponents = new HashMap<String, JComponent>();
@@ -141,6 +144,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          throw new RuntimeException(text, exc);
       }
    }
+   
+   /**
+    * Build the UI
+    */
+   protected abstract void setupEditor();
 
    /**
     * Create the UI component for the Property.
@@ -177,28 +185,6 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       }
 
       return comp;
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#save()
-    */
-   @Override
-   public void save()
-   {
-      AutoController controller = (AutoController) getController();
-      controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
-      AutoStep step = (AutoStep) controller.getAttribute(getStepKey());
-
-      for (String propName : mPropByName.keySet())
-      {
-         JComponent comp = ((JTextField) getComponent(propName));
-         
-         // FIXME - this could actually be a JComponent
-         Object value = ((JTextField) comp).getText();
-         
-         step.setProperty(propName, value);
-      }
    }
    
    /**
@@ -249,6 +235,28 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    {
       return mStepKey;
    }
+   
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.CustomEditor#save()
+    */
+   @Override
+   public void save()
+   {
+      AutoController controller = (AutoController) getController();
+      controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
+      AutoStep step = (AutoStep) controller.getAttribute(getStepKey());
+
+      for (String propName : mPropByName.keySet())
+      {
+         JComponent comp = ((JTextField) getComponent(propName));
+         
+         // FIXME - this could actually be a JComponent
+         Object value = ((JTextField) comp).getText();
+         
+         step.setProperty(propName, value);
+      }
+   }
 
    /*
     * (non-Javadoc)
@@ -271,7 +279,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
             
             if (text.length() == 0)
             {
-               return "Please specify a '" + mPrototype.getDescription(propName) + "'";
+               return "Please specify '" + mPrototype.getDescription(propName) + "'";
             }
             else if (!isValid(prop, text))
             {
@@ -281,5 +289,29 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       }
       
       return null;
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see com.itko.lisa.editor.CustomEditor#display()
+    */
+   @Override
+   public void display()
+   {
+      if (!mInit) setupEditor();
+      
+      mInit = true;
+
+      AutoController controller = (AutoController) getController();
+      AutoStep step = (AutoStep) controller.getAttribute(controller.getStepKey());
+      
+      for (String propName : mPropByName.keySet())
+      {
+         JComponent comp = getComponent(propName);
+         Object value = step.getProperty(propName);
+         
+         // FIXME - this might not be a JTextField
+         ((JTextField) comp).setText((String) value);
+      }
    }
 }

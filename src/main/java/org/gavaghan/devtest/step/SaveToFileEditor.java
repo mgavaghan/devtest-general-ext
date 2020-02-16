@@ -16,41 +16,17 @@ import org.gavaghan.devtest.autostep.AutoEditor;
  */
 public class SaveToFileEditor extends AutoEditor<SaveToFileStep>
 {
-   /** Initialized flag. */
-   private boolean mInit = false;
-
    public SaveToFileEditor()
    {
       super(SaveToFileStep.class);
    }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.CustomEditor#display()
-    */
-   @Override
-   public void display()
-   {
-      setupEditor();
-
-      SaveToFileController controller = (SaveToFileController) getController();
-      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(controller.getStepKey());
-
-      // FIXME - these might not be JTextFields
-      ((JTextField) getComponent("filename")).setText((String) step.getProperty("filename"));
-      ((JTextField) getComponent("encoding")).setText((String)  step.getProperty("encoding"));
-      ((JTextField) getComponent("content")).setText((String) step.getProperty("content"));
-   }
-
    /**
     * Build the UI.
     */
-   private void setupEditor()
+   @Override
+   protected void setupEditor()
    {
-      if (mInit) return;
-
-      mInit = true;
-
       GridBagConstraints gbc;
 
       // build the main editor panel
