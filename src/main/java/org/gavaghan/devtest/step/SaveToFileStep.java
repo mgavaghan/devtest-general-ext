@@ -24,6 +24,11 @@ public class SaveToFileStep extends AutoStep
    /** Our logger */
    static private final Logger LOG = LogManager.getLogger(SaveToFileStep.class);
 
+   public SaveToFileStep()
+   {
+      LOG.debug("Constructing SaveToFileStep");
+   }
+   
    /**
     * Do the business logic of this step.
     *

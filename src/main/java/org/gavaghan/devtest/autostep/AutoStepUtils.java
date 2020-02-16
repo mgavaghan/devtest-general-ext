@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -25,9 +25,9 @@ import org.apache.log4j.Logger;
  */
 public class AutoStepUtils
 {
-   /** Our logger */
-   static private final Logger LOG = LogManager.getLogger(AutoStepUtils.class);
-
+   /** Logger. */
+   static private final Logger LOG = LoggerFactory.getLogger(AutoStepUtils.class);
+   
    /** Map class types to their resource bundles. */
    static private final Map<Class<?>, ResourceBundle> sBundles = new HashMap<Class<?>, ResourceBundle>();
 

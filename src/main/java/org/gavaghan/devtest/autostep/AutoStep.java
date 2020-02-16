@@ -1,12 +1,11 @@
 package org.gavaghan.devtest.autostep;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,17 +26,14 @@ import com.itko.util.XMLUtils;
  */
 public abstract class AutoStep extends TestNode implements CloneImplemented
 {
-   /** Our logger */
-   static private final Logger LOG = LogManager.getLogger(AutoStep.class);
+   /** Logger. */
+   static private final Logger LOG = LoggerFactory.getLogger(AutoStep.class);
 
    /** Default property values. */
    static private final Map<Class<?>, Object> sDefaultInitialValues = new HashMap<Class<?>, Object>();
 
    /** Boxed type mapping. */
    static private final Map<Class<?>, Class<?>> sBoxedTypes = new HashMap<Class<?>, Class<?>>();
-
-   /** Convenient constant for reflection. */
-   static private final Class<?>[] NO_PARAMS = new Class<?>[0];
 
    static
    {
@@ -163,35 +159,6 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    }
 
    /**
-    * Resolve the type name by looking for @TypeName or an override of
-    * getTypeName().
-    * 
-    * @throws NoSuchMethodException
-    */
-   private void reflectTypeName() throws NoSuchMethodException
-   {
-      Method method = mSubClass.getMethod("getTypeName", NO_PARAMS);
-      TypeName typeName = mSubClass.getAnnotation(TypeName.class);
-
-      // if there's no @TypeName, make sure getTypeName() is overridden
-      if ((typeName == null) && method.getDeclaringClass().equals(AutoStep.class))
-      {
-         throw new RuntimeException(getString("NoTypeName", mSubClass.getName()));
-      }
-
-      // if @TypeName wants to be localized
-      if ((typeName != null) && typeName.localized())
-      {
-         mTypeName = AutoStepUtils.getString(mSubClass, typeName.value());
-      }
-      // else, take the literal value
-      else
-      {
-         mTypeName = (typeName != null) ? typeName.value() : null;
-      }
-   }
-
-   /**
     * Find all of the properties from the @Property annotations
     */
    private void reflectProperties()
@@ -246,19 +213,23 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     */
    protected AutoStep()
    {
+      LOG.debug("Constructing AutoStep");
       try
       {
          // get concrete type
          mSubClass = getClass();
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
-
-         reflectTypeName();
+         
+         LOG.debug("About to reflect TypeName");
+         mTypeName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getTypeName", TypeName.class);
+         
+         LOG.debug("About to reflect properties");
          reflectProperties();
       }
-      catch (RuntimeException | NoSuchMethodException exc)
+      catch (RuntimeException exc)
       {
          String text = getString("FailedToInstantiate", getClass().getName());
-         LOG.fatal(text, exc);
+         LOG.error(text, exc);
          throw new RuntimeException(text, exc);
       }
    }
