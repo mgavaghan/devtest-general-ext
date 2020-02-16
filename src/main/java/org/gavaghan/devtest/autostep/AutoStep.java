@@ -128,34 +128,37 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    {
       String value = null;
       NodeList nodeList = element.getChildNodes();
-      
+
       // loop through all of the child nodes
       for (int i = 0; i < nodeList.getLength(); i++)
       {
          Node node = nodeList.item(i);
-         
+
          // is it an element node?
          if (node instanceof Element)
          {
             Element child = (Element) node;
-            
-            Node textNode = child.getFirstChild();
-            
-            // is it an empty element?
-            if (textNode == null)
+
+            if (child.getTagName().contentEquals(childName))
             {
-               value = "";
+               Node textNode = child.getFirstChild();
+
+               // is it an empty element?
+               if (textNode == null)
+               {
+                  value = "";
+               }
+               // else, get the text
+               else
+               {
+                  value = textNode.getNodeValue();
+               }
+
+               break;
             }
-            // else, get the text
-            else
-            {
-               value = textNode.getNodeValue();
-            }
-            
-            break;
          }
       }
-      
+
       return value;
    }
 
@@ -371,6 +374,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
 
    /**
     * Get a parsed property
+    * 
     * @param testExec test state
     * @param propName property name
     * @return parsed property value - never a null.
@@ -378,15 +382,15 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    public String getParsedProperty(TestExec testExec, String propName)
    {
       Object value = getProperty(propName);
-      
+
       return testExec.parseInState(value.toString());
    }
-   
+
    /**
     * Set a property value.
     * 
-    * @param propName  property name
-    * @param value new value (may not be null)
+    * @param propName property name
+    * @param value    new value (may not be null)
     */
    public void setProperty(String propName, Object value)
    {
@@ -421,13 +425,13 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          for (String propName : mPropValues.keySet())
          {
             String text = findChildGetItsText(element, propName);
-            
+
             // skip unassigned values.  the property was probably removed
-            if (text == null)  continue;
-            
+            if (text == null) continue;
+
             Class<?> propType = mPropTypes.get(propName);
             Object value = parseString(text, propType);
-            
+
             setProperty(propName, value);
          }
       }
@@ -448,8 +452,6 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    {
       try
       {
-         super.writeSubXML(pw);
-         
          for (String propName : mPropValues.keySet())
          {
             XMLUtils.streamTagAndChild(pw, propName, getProperty(propName).toString());
