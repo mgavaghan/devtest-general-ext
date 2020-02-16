@@ -80,7 +80,7 @@ public class SaveToFileEditor extends CustomEditor
    {
       SaveToFileController controller = (SaveToFileController) getController();
       controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
-      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
+      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(controller.getStepKey());
 
       step.setProperty("filename", getFilename().getText());
       step.setProperty("encoding", getEncoding().getText());
@@ -97,7 +97,7 @@ public class SaveToFileEditor extends CustomEditor
       setupEditor();
 
       SaveToFileController controller = (SaveToFileController) getController();
-      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
+      SaveToFileStep step = (SaveToFileStep) controller.getAttribute(controller.getStepKey());
 
       getFilename().setText((String) step.getProperty("filename"));
       getEncoding().setText((String) step.getProperty("encoding"));

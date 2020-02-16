@@ -1,29 +1,24 @@
 package org.gavaghan.devtest.step;
 
-import java.io.PrintWriter;
-
 import javax.swing.Icon;
 
-import com.itko.lisa.editor.TestNodeInfo;
+import org.gavaghan.devtest.autostep.AutoController;
 
 /**
  *
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
-public class SaveToFileController extends TestNodeInfo
+public class SaveToFileController extends AutoController<SaveToFileStep>
 {
    /** Context key. */
    static final String STEP_KEY = "lisa.SaveToFile.key";
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.TestNodeInfo#initNewOne()
+   
+   /**
+    * Constructor passes the type paramter class;
     */
-   @Override
-   public void initNewOne()
+   public SaveToFileController()
    {
-      SaveToFileStep node = new SaveToFileStep();
-      putAttribute(STEP_KEY, node);
+      super(SaveToFileStep.class);
    }
 
    /*
@@ -44,47 +39,5 @@ public class SaveToFileController extends TestNodeInfo
    public Icon getSmallIcon()
    {
       return SaveToFileIcons.getSmallIcon();
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.TestNodeInfo#writeSubXML(java.io.PrintWriter)
-    */
-   @Override
-   public void writeSubXML(PrintWriter pw)
-   {
-      SaveToFileStep node = (SaveToFileStep) getAttribute(STEP_KEY);
-      node.writeSubXML(pw);
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.ControllerBase#migrate(java.lang.Object)
-    */
-   @Override
-   public void migrate(Object obj)
-   {
-      SaveToFileStep node = (SaveToFileStep) obj;
-      putAttribute(STEP_KEY, node);
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.ControllerBase#getEditorName()
-    */
-   @Override
-   public String getEditorName()
-   {
-      return "Save To File";
-   }
-
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.gui.ContextHelpSupport#getHelpString()
-    */
-   @Override
-   public String getHelpString()
-   {
-      return "Save To File";
    }
 }
