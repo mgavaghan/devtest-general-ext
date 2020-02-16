@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 @Repeatable(Properties.class)
-public @interface Property {
+public @interface Property
+{
    /**
     * The name of the property.
     */
@@ -62,4 +63,22 @@ public @interface Property {
     * @return
     */
    String initial() default "";
+
+   /**
+    * Specifies if the editor should render this field as a JPasswordField. Only
+    * applies to components that would otherwise be a JTextField. If set, 'password' takes
+    * precedence over 'multiline'.
+    * 
+    * @return
+    */
+   boolean password() default false;
+
+   /**
+    * Specifies if the editor should render this field as a JTextArea. Only applies
+    * to components that would otherwise be a JTextField. If set, 'password' takes
+    * precedence.
+    * 
+    * @return
+    */
+   boolean multiline() default false;
 }
