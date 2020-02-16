@@ -51,6 +51,8 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
 
    /**
     * Start reflecting on the concrete type
+    * 
+    * @param stepType the AutoStep we control
     */
    protected AutoController(Class<T> stepType)
    {
@@ -70,7 +72,7 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
 
          LOG.debug("About to reflect simpkle getters");
          mEditorName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getEditorName", TypeName.class);
-         mHelpString = AutoStepUtils.reflectSimpleGetter(mSubClass, "getEditorName", TypeName.class);
+         mHelpString = AutoStepUtils.reflectSimpleGetter(mSubClass, "getHelpString", TypeName.class);
       }
       catch (RuntimeException exc)
       {
@@ -106,14 +108,14 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
     * @see com.itko.lisa.editor.TestNodeInfo#getLargeIcon()
     */
    @Override
-   public abstract Icon getLargeIcon();  // FIXME make a default sometime
-   
+   public abstract Icon getLargeIcon(); // FIXME make a default sometime
+
    /*
     * (non-Javadoc)
     * @see com.itko.lisa.editor.TestNodeInfo#getSmallIcon()
     */
    @Override
-   public abstract Icon getSmallIcon();  // FIXME make a default sometime
+   public abstract Icon getSmallIcon(); // FIXME make a default sometime
 
    /*
     * (non-Javadoc)
