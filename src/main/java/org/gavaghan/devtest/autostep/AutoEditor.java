@@ -11,6 +11,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.slf4j.Logger;
@@ -188,11 +190,17 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       // initialize a String in a text field
       if (String.class.equals(propType))
       {
-         // FIXME support password fields
-         // FIXME support text areas
-         comp = new JTextField("");
+         if (property.sensitive() && property.multiline())
+         {
+            // FIXME localize
+            LOG.warn("Both 'sensitive' and 'multiline' are set on '" + property.name() + "' so 'sensitive' takes precedence.");
+         }
+         
+         if (property.sensitive())  comp = new JPasswordField("");
+         else if (property.multiline())  comp = new JTextArea("");
+         else comp = new JTextField("");
       }
-      // initialize a String in an int property as long as it parses
+      // initialize a String in an Integer property as long as it parses
       else if (Integer.class.equals(propType))
       {
          comp = new JTextField("");

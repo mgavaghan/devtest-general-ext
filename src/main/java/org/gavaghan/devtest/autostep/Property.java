@@ -66,16 +66,16 @@ public @interface Property
 
    /**
     * Specifies if the editor should render this field as a JPasswordField. Only
-    * applies to components that would otherwise be a JTextField. If set, 'password' takes
-    * precedence over 'multiline'.
+    * applies to components that would otherwise be a JTextField. If set,
+    * 'sensitive' takes precedence over 'multiline'.
     * 
     * @return
     */
-   boolean password() default false;
+   boolean sensitive() default false;
 
    /**
     * Specifies if the editor should render this field as a JTextArea. Only applies
-    * to components that would otherwise be a JTextField. If set, 'password' takes
+    * to components that would otherwise be a JTextField. If set, 'sensitive' takes
     * precedence.
     * 
     * @return
