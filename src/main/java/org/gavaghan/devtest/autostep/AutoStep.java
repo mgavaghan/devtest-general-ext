@@ -14,6 +14,7 @@ import com.itko.lisa.test.TestDefException;
 import com.itko.lisa.test.TestEvent;
 import com.itko.lisa.test.TestExec;
 import com.itko.lisa.test.TestRunException;
+import com.itko.util.XMLUtils;
 
 /**
  * Base class for DevTest steps that are defined declaratively.
@@ -28,6 +29,9 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    /** Default property values. */
    static private final Map<Class<?>, Object> sDefaultInitialValues = new HashMap<Class<?>, Object>();
 
+   /** Boxed type mapping. */
+   static private final Map<Class<?>, Class<?>> sBoxedTypes = new HashMap<Class<?>, Class<?>>();
+
    /** Convenient constant for reflection. */
    static private final Class<?>[] NO_PARAMS = new Class<?>[0];
 
@@ -36,9 +40,11 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
       // setup default property values
       sDefaultInitialValues.put(String.class, "");
       sDefaultInitialValues.put(Integer.class, new Integer(0));
-      sDefaultInitialValues.put(int.class, new Integer(0));
       sDefaultInitialValues.put(Boolean.class, Boolean.FALSE);
-      sDefaultInitialValues.put(boolean.class, Boolean.FALSE);
+      
+      // setup boxed types
+      sBoxedTypes.put(int.class, Integer.class);
+      sBoxedTypes.put(boolean.class, Boolean.class);
    }
 
    /** Our concrete type. */
@@ -80,7 +86,7 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    private Object getDefault(Class<?> klass)
    {
       Object value = sDefaultInitialValues.get(klass);
-
+      
       if (value == null)
       {
          throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
@@ -132,6 +138,16 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
             String name = prop.value();
             Class<?> type = prop.type();
             String descr = prop.description();
+            
+            // check if value should be boxed
+            Class<?> box = sBoxedTypes.get(type);
+            
+            if (box != null)
+            {
+               LOG.warn(getString("Boxing", name, box.getSimpleName()));
+               
+               type = box;
+            }
 
             // look for duplicate name in descriptions
             if (mPropDescr.containsKey(name))
@@ -314,15 +330,26 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    /**
     * Build step from file system.
     * 
-    * @param testCase not used
+    * @param testCase the test case being built
     * @param element  XML element from test case
     * @throws TestDefException on any initialization failure
     */
    //@Override
    public void initialize(TestCase testCase, Element element) throws TestDefException
    {
-      // TODO Auto-generated method stub
+      LOG.debug("initialize()");
 
+      try
+      {
+         // FIXME super.initialize(testCase, element);
+         //setFilenameProperty(XMLUtils.findChildGetItsText(element, "filename"));
+         //setTargetFolder(XMLUtils.findChildGetItsText(element, "targetFolder"));
+      }
+      catch (Exception exc)
+      {
+         LOG.error("Failed in initialize()", exc);
+         throw exc;
+      }
    }
 
    /**
@@ -333,5 +360,18 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    //@Override
    public void writeSubXML(PrintWriter pw)
    {
+      try
+      {
+         // FIXME super.writeSubXML(pw);
+         for (String name : mPropValues.keySet())
+         {
+            XMLUtils.streamTagAndChild(pw, name, getProperty(name).toString());
+         }
+      }
+      catch (Exception exc)
+      {
+         LOG.error("Failed in writeSubXML()", exc);
+         throw exc;
+      }
    }
 }
