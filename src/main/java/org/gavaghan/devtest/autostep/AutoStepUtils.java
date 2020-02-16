@@ -1,10 +1,15 @@
 package org.gavaghan.devtest.autostep;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * <P>
@@ -20,11 +25,22 @@ import java.util.ResourceBundle;
  */
 public class AutoStepUtils
 {
+   /** Our logger */
+   static private final Logger LOG = LogManager.getLogger(AutoStepUtils.class);
+
    /** Map class types to their resource bundles. */
    static private final Map<Class<?>, ResourceBundle> sBundles = new HashMap<Class<?>, ResourceBundle>();
 
+   /** Convenient constant for reflection. */
+   static private final Class<?>[] NO_PARAMS = new Class<?>[0];
+
+   /** Convenient constant for reflection. */
+   static private final Object[] NO_ARGS = new Object[0];
+
    static
    {
+      LOG.debug("Static initialization on AutoStepUtils");
+
       // make sure we at least find the AutoStep bundle because it's used to localize errors
       sBundles.put(AutoStep.class, ResourceBundle.getBundle(AutoStep.class.getName()));
    }
@@ -48,6 +64,8 @@ public class AutoStepUtils
    {
       ResourceBundle bundle;
 
+      LOG.debug("getResourceBundle() - ENTER");
+
       synchronized (sBundles)
       {
          // look for it in the map
@@ -63,12 +81,16 @@ public class AutoStepUtils
             catch (MissingResourceException exc)
             {
                // the resource file could not be found
-               throw new RuntimeException(getString(AutoStep.class, "NoResourceBundle", klass.getName()));
+               String text = getString(AutoStep.class, "NoResourceBundle", klass.getName());
+               LOG.error(text);
+               throw new RuntimeException(text);
             }
 
             sBundles.put(klass, bundle);
          }
       }
+
+      LOG.debug("getResourceBundle() - EXIT");
 
       return bundle;
    }
@@ -83,14 +105,100 @@ public class AutoStepUtils
     */
    static public String getString(Class<?> klass, String key, Object... args)
    {
+      LOG.debug("getString() - ENTER");
+
       try
       {
+         LOG.debug("getString() - EXIT");
          return MessageFormat.format(getResourceBundle(klass).getString(key), args);
       }
-      catch(MissingResourceException exc)
+      catch (MissingResourceException exc)
       {
          // the key in the resource file could not be found
+         String text = getString(AutoStep.class, "NoResourceKey", key, klass.getName());
+         LOG.error(text);
          throw new RuntimeException(getString(AutoStep.class, "NoResourceKey", key, klass.getName()));
       }
+
+   }
+
+   static public String reflectSimpleGetter(Class<?> klass, String methodName, Class annotation)
+   {
+      String retval;
+
+      LOG.debug("reflectSimpleGetter() - ENTER");
+
+      try
+      {
+         // do some reflections on the input
+         String annotName = annotation.getSimpleName();
+         Method method = klass.getMethod(methodName, NO_PARAMS);
+         @SuppressWarnings("unchecked")
+         Object annotObj = klass.getAnnotation(annotation);
+
+         if (LOG.isDebugEnabled())
+         {
+            LOG.debug("Annotation type: " + annotName);
+            LOG.debug("annot = " + ((annotObj == null) ? "null" : annotObj.getClass().getSimpleName()));
+         }
+
+         // if there's no annotation on the class..
+         if (annotObj == null)
+         {
+            if (LOG.isDebugEnabled()) LOG.debug("@" + annotName + " not found on " + klass.getSimpleName());
+            // at least ensure the method was overwritten
+            if (method.getDeclaringClass().equals(AutoStep.class))
+            {
+               throw new RuntimeException(getString(AutoStep.class, "NoGetterValue", klass.getName(), annotName, methodName));
+            }
+            retval = null;
+         }
+
+         // else, we found an annotation
+         else
+         {
+            if (LOG.isDebugEnabled()) LOG.debug("@" + annotName + " was found on " + klass.getSimpleName());
+
+            // lookup 'localized'
+            @SuppressWarnings("unchecked")
+            Method localizedMethod = annotation.getMethod("localized", NO_PARAMS);
+            boolean localized = ((Boolean) localizedMethod.invoke(annotObj, NO_ARGS)).booleanValue();
+
+            // lookup 'value'
+            @SuppressWarnings("unchecked")
+            Method valueMethod = annotation.getMethod("value", NO_PARAMS);
+            String value = valueMethod.invoke(annotObj, NO_ARGS).toString();
+
+            // if getter wants to be localized
+            if (localized)
+            {
+               retval = AutoStepUtils.getString(klass, value);
+            }
+            // else, take the literal value
+            else
+            {
+               retval = value;
+            }
+         }
+      }
+      catch (InvocationTargetException exc)
+      {
+         Throwable t = exc.getCause();
+         // FIXME localize this
+         throw new RuntimeException("Failure trying to reflect on getter: " + methodName, t);
+      }
+      catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException exc)
+      {
+         // FIXME localize this
+         throw new RuntimeException("Failure trying to reflect on getter: " + methodName, exc);
+      }
+
+      if (LOG.isDebugEnabled())
+      {
+         LOG.debug("reflected = " + retval);
+         LOG.debug("reflectSimpleGetter() - EXIT");
+      }
+      
+      return retval;
    }
 }
