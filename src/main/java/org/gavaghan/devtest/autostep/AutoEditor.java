@@ -68,11 +68,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          for (Property prop : props.value())
          {
             // save the property
-            mPropByName.put(prop.value(), prop);
+            mPropByName.put(prop.name(), prop);
 
             // create the component for this property
             JComponent comp = createComponent(prop);
-            mPropComponents.put(prop.value(), comp);
+            mPropComponents.put(prop.name(), comp);
 
             /*
             String propName = prop.value();

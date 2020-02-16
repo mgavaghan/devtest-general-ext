@@ -156,7 +156,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       {
          for (Property prop : props.value())
          {
-            String propName = prop.value();
+            String propName = prop.name();
             Class<?> propType = prop.type();
             String descr = prop.description();
 

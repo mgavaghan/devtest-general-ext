@@ -49,9 +49,17 @@ public @interface Property {
    boolean localized() default false;
 
    /**
-    * Indicates if a field is mandatory.  Defaults to true.
+    * Indicates if a field is mandatory. Defaults to true.
     * 
     * @return 'true' if mandatory
     */
    boolean mandatory() default true;
+
+   /**
+    * Specifies initial value for this property. It must be a String, but if the
+    * property type is something else, it will be parsed.
+    * 
+    * @return
+    */
+   String initialValue() default "";
 }
