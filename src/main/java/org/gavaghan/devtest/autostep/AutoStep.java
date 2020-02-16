@@ -8,12 +8,16 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.itko.lisa.test.TestCase;
 import com.itko.lisa.test.TestDefException;
 import com.itko.lisa.test.TestEvent;
 import com.itko.lisa.test.TestExec;
+import com.itko.lisa.test.TestNode;
 import com.itko.lisa.test.TestRunException;
+import com.itko.util.CloneImplemented;
 import com.itko.util.XMLUtils;
 
 /**
@@ -21,7 +25,7 @@ import com.itko.util.XMLUtils;
  * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
-public abstract class AutoStep //extends TestNode implements CloneImplemented
+public abstract class AutoStep extends TestNode implements CloneImplemented
 {
    /** Our logger */
    static private final Logger LOG = LogManager.getLogger(AutoStep.class);
@@ -41,7 +45,7 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
       sDefaultInitialValues.put(String.class, "");
       sDefaultInitialValues.put(Integer.class, new Integer(0));
       sDefaultInitialValues.put(Boolean.class, Boolean.FALSE);
-      
+
       // setup boxed types
       sBoxedTypes.put(int.class, Integer.class);
       sBoxedTypes.put(boolean.class, Boolean.class);
@@ -78,6 +82,24 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    }
 
    /**
+    * Parse a string into a specified type.
+    * 
+    * @param text
+    * @param klass
+    * @return
+    */
+   @SuppressWarnings("boxing")
+   private Object parseString(String text, Class<?> klass)
+   {
+      // NOTE this could be turned into a map as well
+      if (String.class.equals(klass)) return text;
+      if (Boolean.class.equals(klass)) return Boolean.parseBoolean(text);
+      if (Integer.class.equals(klass)) return Integer.parseInt(text);
+
+      throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
+   }
+
+   /**
     * Instantiate the default instance of a type.
     * 
     * @param klass a supported class
@@ -86,12 +108,54 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    private Object getDefault(Class<?> klass)
    {
       Object value = sDefaultInitialValues.get(klass);
-      
+
       if (value == null)
       {
          throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
       }
 
+      return value;
+   }
+
+   /**
+    * Given an XML element, get the text of the named child element.
+    * 
+    * @param element
+    * @param childName
+    * @return 'null' if element not found
+    */
+   private String findChildGetItsText(Element element, String childName)
+   {
+      String value = null;
+      NodeList nodeList = element.getChildNodes();
+      
+      // loop through all of the child nodes
+      for (int i = 0; i < nodeList.getLength(); i++)
+      {
+         Node node = nodeList.item(i);
+         
+         // is it an element node?
+         if (node instanceof Element)
+         {
+            Element child = (Element) node;
+            
+            Node textNode = child.getFirstChild();
+            
+            // is it an empty element?
+            if (textNode == null)
+            {
+               value = "";
+            }
+            // else, get the text
+            else
+            {
+               value = textNode.getNodeValue();
+            }
+            
+            break;
+         }
+      }
+      
       return value;
    }
 
@@ -135,37 +199,37 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
       {
          for (Property prop : props.value())
          {
-            String name = prop.value();
-            Class<?> type = prop.type();
+            String propName = prop.value();
+            Class<?> propType = prop.type();
             String descr = prop.description();
-            
+
             // check if value should be boxed
-            Class<?> box = sBoxedTypes.get(type);
-            
+            Class<?> box = sBoxedTypes.get(propType);
+
             if (box != null)
             {
-               LOG.warn(getString("Boxing", name, box.getSimpleName()));
-               
-               type = box;
+               LOG.warn(getString("Boxing", propName, box.getSimpleName()));
+
+               propType = box;
             }
 
             // look for duplicate name in descriptions
-            if (mPropDescr.containsKey(name))
+            if (mPropDescr.containsKey(propName))
             {
-               throw new RuntimeException(getString("DupeProperty", name, mSubClass.getName()));
+               throw new RuntimeException(getString("DupeProperty", propName, mSubClass.getName()));
             }
 
             // add description
-            if (descr.length() == 0) descr = name; // default
+            if (descr.length() == 0) descr = propName; // default
             if (prop.localized()) descr = AutoStepUtils.getString(mSubClass, descr);
-            mPropDescr.put(name, descr);
-            if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + name + ": " + descr);
+            mPropDescr.put(propName, descr);
+            if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + propName + ": " + descr);
 
             // add default values
-            mPropValues.put(name, getDefault(type));
+            mPropValues.put(propName, getDefault(propType));
 
             // add type
-            mPropTypes.put(name, type);
+            mPropTypes.put(propName, propType);
          }
       }
       else
@@ -240,7 +304,7 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
     * @param testExec test state
     * @throws TestRunException on any unhandled test failure
     */
-   //@Override
+   @Override
    protected final void execute(TestExec testExec) throws TestRunException
    {
       try
@@ -284,7 +348,7 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
     * 
     * @return the type name.
     */
-   //@Override
+   @Override
    public String getTypeName()
    {
       return mTypeName;
@@ -293,38 +357,51 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    /**
     * Get a property value.
     * 
-    * @param name property name
+    * @param propName property name
     * @return property value - never a null.
     */
-   public Object getProperty(String name)
+   public Object getProperty(String propName)
    {
-      Object value = mPropValues.get(name);
+      Object value = mPropValues.get(propName);
 
-      if (value == null) throw new RuntimeException(getString("NoSuchProperty", name, mSubClass.getName()));
+      if (value == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
 
       return value;
    }
 
    /**
+    * Get a parsed property
+    * @param testExec test state
+    * @param propName property name
+    * @return parsed property value - never a null.
+    */
+   public Object getParsedProperty(TestExec testExec, String propName)
+   {
+      Object value = getProperty(propName);
+      
+      return testExec.parseInState(value.toString());
+   }
+   
+   /**
     * Set a property value.
     * 
-    * @param name  property name
+    * @param propName  property name
     * @param value new value (may not be null)
     */
-   public void setProperty(String name, Object value)
+   public void setProperty(String propName, Object value)
    {
-      if (name == null) throw new NullPointerException("'name' may not be null.");
-      if (value == null) throw new RuntimeException(getString("NoNullProperties", name, mSubClass.getName()));
+      if (propName == null) throw new NullPointerException("'name' may not be null.");
+      if (value == null) throw new RuntimeException(getString("NoNullProperties", propName, mSubClass.getName()));
 
-      Class<?> type = mPropTypes.get(name);
-      if (type == null) throw new RuntimeException(getString("NoSuchProperty", name, mSubClass.getName()));
+      Class<?> propType = mPropTypes.get(propName);
+      if (propType == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
 
-      if (!type.isAssignableFrom(value.getClass()))
+      if (!propType.isAssignableFrom(value.getClass()))
       {
-         throw new RuntimeException(getString("WrongType", name, mSubClass.getName(), type.getSimpleName()));
+         throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()));
       }
 
-      mPropValues.put(name, value);
+      mPropValues.put(propName, value);
    }
 
    /**
@@ -334,20 +411,29 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
     * @param element  XML element from test case
     * @throws TestDefException on any initialization failure
     */
-   //@Override
+   @Override
    public void initialize(TestCase testCase, Element element) throws TestDefException
    {
       LOG.debug("initialize()");
 
       try
       {
-         // FIXME super.initialize(testCase, element);
-         //setFilenameProperty(XMLUtils.findChildGetItsText(element, "filename"));
-         //setTargetFolder(XMLUtils.findChildGetItsText(element, "targetFolder"));
+         for (String propName : mPropValues.keySet())
+         {
+            String text = findChildGetItsText(element, propName);
+            
+            // skip unassigned values.  the property was probably removed
+            if (text == null)  continue;
+            
+            Class<?> propType = mPropTypes.get(propName);
+            Object value = parseString(text, propType);
+            
+            setProperty(propName, value);
+         }
       }
       catch (Exception exc)
       {
-         LOG.error("Failed in initialize()", exc);
+         LOG.error(getString("MethodFailed", "initialize()"), exc);
          throw exc;
       }
    }
@@ -357,20 +443,21 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
     * 
     * @param pw target writer.
     */
-   //@Override
+   @Override
    public void writeSubXML(PrintWriter pw)
    {
       try
       {
-         // FIXME super.writeSubXML(pw);
-         for (String name : mPropValues.keySet())
+         super.writeSubXML(pw);
+         
+         for (String propName : mPropValues.keySet())
          {
-            XMLUtils.streamTagAndChild(pw, name, getProperty(name).toString());
+            XMLUtils.streamTagAndChild(pw, propName, getProperty(propName).toString());
          }
       }
       catch (Exception exc)
       {
-         LOG.error("Failed in writeSubXML()", exc);
+         LOG.error(getString("MethodFailed", "writeSubXML()"), exc);
          throw exc;
       }
    }
