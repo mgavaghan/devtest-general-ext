@@ -1,6 +1,9 @@
 package org.gavaghan.devtest.autostep;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,16 +24,21 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
 {
    /** Our logger */
    static private final Logger LOG = LogManager.getLogger(AutoStep.class);
-   
-   /** Shorthand for the AutoStep class object. */
-   static private final Class<?> THIS;
+
+   /** Default property values. */
+   static private final Map<Class<?>, Object> sDefaultInitialValues = new HashMap<Class<?>, Object>();
 
    /** Convenient constant for reflection. */
    static private final Class<?>[] NO_PARAMS = new Class<?>[0];
-   
+
    static
    {
-      THIS = AutoStep.class;
+      // setup default property values
+      sDefaultInitialValues.put(String.class, "");
+      sDefaultInitialValues.put(Integer.class, new Integer(0));
+      sDefaultInitialValues.put(int.class, new Integer(0));
+      sDefaultInitialValues.put(Boolean.class, Boolean.FALSE);
+      sDefaultInitialValues.put(boolean.class, Boolean.FALSE);
    }
 
    /** Our concrete type. */
@@ -39,8 +47,47 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    /** The value to be returned by getTypeName() */
    private String mTypeName;
 
+   /** Map of property names to their value. */
+   private final Map<String, Object> mPropValues = new HashMap<String, Object>();
+
+   /** Map of property names to their type. */
+   private final Map<String, Class<?>> mPropTypes = new HashMap<String, Class<?>>();
+
+   /** Map of property names to their description. */
+   private final Map<String, String> mPropDescr = new HashMap<String, String>();
+
    /** Last response if subtype overrides it. */
    private Object mLastResponse = null;
+
+   /**
+    * Convenience method for getting AutoStep resources.
+    * 
+    * @param key
+    * @param args
+    * @return
+    */
+   private String getString(String key, Object... args)
+   {
+      return AutoStepUtils.getString(AutoStep.class, key, args);
+   }
+
+   /**
+    * Instantiate the default instance of a type.
+    * 
+    * @param klass a supported class
+    * @return new instance of type klass
+    */
+   private Object getDefault(Class<?> klass)
+   {
+      Object value = sDefaultInitialValues.get(klass);
+
+      if (value == null)
+      {
+         throw new RuntimeException(getString("TypeNotSupported", klass.getName(), mSubClass.getName()));
+      }
+
+      return value;
+   }
 
    /**
     * Resolve the type name by looking for @TypeName or an override of
@@ -53,10 +100,10 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
       Method method = mSubClass.getMethod("getTypeName", NO_PARAMS);
       TypeName typeName = mSubClass.getAnnotation(TypeName.class);
 
-      // if there's not @TypeName, make sure getTypeName() is overridden
+      // if there's no @TypeName, make sure getTypeName() is overridden
       if ((typeName == null) && method.getDeclaringClass().equals(AutoStep.class))
       {
-         throw new RuntimeException(AutoStepUtils.getString(THIS, "NoTypeName", mSubClass.getSimpleName()));
+         throw new RuntimeException(getString("NoTypeName", mSubClass.getName()));
       }
 
       // if @TypeName wants to be localized
@@ -72,7 +119,47 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
    }
 
    /**
-    * Start reflecting on the concrete type 
+    * Find all of the properties from the @Property annotations
+    */
+   private void reflectProperties()
+   {
+      Properties props = mSubClass.getAnnotation(Properties.class);
+
+      if (props != null)
+      {
+         for (Property prop : props.value())
+         {
+            String name = prop.value();
+            Class<?> type = prop.type();
+            String descr = prop.description();
+
+            // look for duplicate name in descriptions
+            if (mPropDescr.containsKey(name))
+            {
+               throw new RuntimeException(getString("DupeProperty", name, mSubClass.getName()));
+            }
+
+            // add description
+            if (descr.length() == 0) descr = name; // default
+            if (prop.localized()) descr = AutoStepUtils.getString(mSubClass, descr);
+            mPropDescr.put(name, descr);
+            if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + name + ": " + descr);
+
+            // add default values
+            mPropValues.put(name, getDefault(type));
+
+            // add type
+            mPropTypes.put(name, type);
+         }
+      }
+      else
+      {
+         LOG.warn(getString("LogNoProperties", mSubClass.getName()));
+      }
+   }
+
+   /**
+    * Start reflecting on the concrete type
     */
    protected AutoStep()
    {
@@ -83,11 +170,11 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
 
          reflectTypeName();
-
+         reflectProperties();
       }
       catch (RuntimeException | NoSuchMethodException exc)
       {
-         String text = AutoStepUtils.getString(THIS, "FailedToInstantiate", getClass().getName());
+         String text = getString("FailedToInstantiate", getClass().getName());
          LOG.fatal(text, exc);
          throw new RuntimeException(text, exc);
       }
@@ -187,10 +274,64 @@ public abstract class AutoStep //extends TestNode implements CloneImplemented
       return mTypeName;
    }
 
+   /**
+    * Get a property value.
+    * 
+    * @param name property name
+    * @return property value - never a null.
+    */
+   public Object getProperty(String name)
+   {
+      Object value = mPropValues.get(name);
+
+      if (value == null) throw new RuntimeException(getString("NoSuchProperty", name, mSubClass.getName()));
+
+      return value;
+   }
+
+   /**
+    * Set a property value.
+    * 
+    * @param name  property name
+    * @param value new value (may not be null)
+    */
+   public void setProperty(String name, Object value)
+   {
+      if (name == null) throw new NullPointerException("'name' may not be null.");
+      if (value == null) throw new RuntimeException(getString("NoNullProperties", name, mSubClass.getName()));
+
+      Class<?> type = mPropTypes.get(name);
+      if (type == null) throw new RuntimeException(getString("NoSuchProperty", name, mSubClass.getName()));
+
+      if (!type.isAssignableFrom(value.getClass()))
+      {
+         throw new RuntimeException(getString("WrongType", name, mSubClass.getName(), type.getSimpleName()));
+      }
+
+      mPropValues.put(name, value);
+   }
+
+   /**
+    * Build step from file system.
+    * 
+    * @param testCase not used
+    * @param element  XML element from test case
+    * @throws TestDefException on any initialization failure
+    */
    //@Override
-   public void initialize(TestCase testCase, Element arg1) throws TestDefException
+   public void initialize(TestCase testCase, Element element) throws TestDefException
    {
       // TODO Auto-generated method stub
 
+   }
+
+   /**
+    * Save step to the file system.
+    * 
+    * @param pw target writer.
+    */
+   //@Override
+   public void writeSubXML(PrintWriter pw)
+   {
    }
 }
