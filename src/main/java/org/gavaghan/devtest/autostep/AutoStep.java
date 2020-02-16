@@ -384,32 +384,33 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       if (propName == null) throw new NullPointerException("'name' may not be null.");
       if (value == null) throw new RuntimeException(getString("NoNullProperties", propName, mSubClass.getName()));
 
-      Class<?> propType = mPropTypes.get(propName);
-      if (propType == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
+      Class<?> targetType = mPropTypes.get(propName);
+      if (targetType == null) throw new RuntimeException(getString("NoSuchProperty", propName, mSubClass.getName()));
       
       Object assignValue = value;
 
       // make sure object matches type
-      if (!propType.isAssignableFrom(value.getClass()))
+      if (!targetType.isAssignableFrom(assignValue.getClass()))
       {
-         if (String.class.equals(value.getClass()))
+         // we might be able to coerce a String
+         if (String.class.equals(assignValue.getClass()))
          {
             Object newValue;
             
             try
             {
-               newValue = parseString((String) assignValue, assignValue.getClass());
+               newValue = parseString((String) assignValue, targetType.getClass());
                assignValue = newValue;
             }
             catch (IllegalArgumentException exc)
             {
-               if (LOG.isDebugEnabled())  LOG.debug("Failed to coerce '" + (String) value + ", into a '" + propType.getSimpleName());
-               throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()), exc);
+               if (LOG.isDebugEnabled())  LOG.debug("Failed to coerce '" + (String) value + ", into a '" + targetType.getSimpleName());
+               throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), targetType.getSimpleName()), exc);
             }
          }
          else
          {
-            throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), propType.getSimpleName()));
+            throw new RuntimeException(getString("WrongType", propName, mSubClass.getName(), targetType.getSimpleName()));
          }
       }
 

@@ -70,7 +70,7 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
          mSubClass = getClass();
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
 
-         LOG.debug("About to reflect simpkle getters");
+         LOG.debug("About to reflect simple getters");
          mEditorName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getEditorName", TypeName.class);
          mHelpString = AutoStepUtils.reflectSimpleGetter(mSubClass, "getHelpString", TypeName.class);
       }
