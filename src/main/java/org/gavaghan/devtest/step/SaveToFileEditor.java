@@ -82,9 +82,9 @@ public class SaveToFileEditor extends CustomEditor
       controller.getTestCaseInfo().getTestExec().saveNodeResponse(controller.getName(), controller.getRet());
       SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
 
-      step.setFilename(getFilename().getText());
-      step.setEncoding(getEncoding().getText());
-      step.setContent(getContent().getText());
+      step.setProperty("filename", getFilename().getText());
+      step.setProperty("encoding", getEncoding().getText());
+      step.setProperty("content", getContent().getText());
    }
 
    /*
@@ -99,9 +99,9 @@ public class SaveToFileEditor extends CustomEditor
       SaveToFileController controller = (SaveToFileController) getController();
       SaveToFileStep step = (SaveToFileStep) controller.getAttribute(SaveToFileController.STEP_KEY);
 
-      getFilename().setText(step.getFilename());
-      getEncoding().setText(step.getEncoding());
-      getContent().setText(step.getContent());
+      getFilename().setText((String) step.getProperty("filename"));
+      getEncoding().setText((String) step.getProperty("encoding"));
+      getContent().setText((String) step.getProperty("content"));
    }
 
    /**
