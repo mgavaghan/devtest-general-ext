@@ -20,7 +20,9 @@ import com.itko.util.CloneImplemented;
 import com.itko.util.XMLUtils;
 
 /**
- * <p>Base class for DevTest steps that are defined declaratively.</p>
+ * <p>
+ * Base class for DevTest steps that are defined declaratively.
+ * </p>
  * 
  * Required annotation on subtype are:
  * 
@@ -100,17 +102,17 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       String initial = prop.initial().trim();
 
       if (value == null) throw new RuntimeException(getString("TypeNotSupported", prop.type().getName(), mSubClass.getName()));
-      
+
       if (initial.length() > 0)
       {
          // TODO this could be made more efficient
-         
+
          // set initial value of a String property
          if (String.class.equals(propType))
          {
             value = initial;
          }
-         
+
          // set initial value an Integer property as long as it parses
          else if (Integer.class.equals(propType))
          {
@@ -123,7 +125,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
                LOG.error(initial + " could not be parsed as an Integer");
             }
          }
-         
+
          // initialize a String in an boolean property
          else if (Boolean.class.equals(propType))
          {
@@ -180,52 +182,72 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    }
 
    /**
+    * Reflect on an individual property.
+    * 
+    * @param prop
+    */
+   private void reflectProperty(Property prop)
+   {
+      String propName = prop.name(); // property name
+      Class<?> propType = prop.type(); // property type
+      String descr = prop.description(); // property descriptions before calculating default
+
+      // check if value should be boxed
+      Class<?> box = sBoxedTypes.get(propType);
+
+      if (box != null)
+      {
+         LOG.warn(getString("Boxing", propName, box.getSimpleName()));
+
+         propType = box;
+      }
+
+      // look for duplicate name in descriptions
+      if (mPropDescr.containsKey(propName))
+      {
+         throw new RuntimeException(getString("DupeProperty", propName, mSubClass.getName()));
+      }
+
+      // add description
+      if (descr.length() == 0) descr = propName; // default
+      if (prop.localized()) descr = AutoStepUtils.getString(mSubClass, descr);
+      mPropDescr.put(propName, descr);
+      if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + propName + ": " + descr);
+
+      // add default values
+      mPropValues.put(propName, getDefault(prop));
+
+      // add type
+      mPropTypes.put(propName, propType);
+   }
+
+   /**
     * Find all of the properties from the @Property annotations
     */
    private void reflectProperties()
    {
       Properties props = mSubClass.getAnnotation(Properties.class);
 
-      if (props != null)
+      // might be unfortunate case of only one annotation, so array doesn't come back
+      if (props == null)
       {
-         for (Property prop : props.value())
+         Property prop = mSubClass.getAnnotation(Property.class);
+
+         if (prop != null)
          {
-            String propName = prop.name(); // property name
-            Class<?> propType = prop.type(); // property type
-            String descr = prop.description(); // property descriptions before calculating default
-
-            // check if value should be boxed
-            Class<?> box = sBoxedTypes.get(propType);
-
-            if (box != null)
-            {
-               LOG.warn(getString("Boxing", propName, box.getSimpleName()));
-
-               propType = box;
-            }
-
-            // look for duplicate name in descriptions
-            if (mPropDescr.containsKey(propName))
-            {
-               throw new RuntimeException(getString("DupeProperty", propName, mSubClass.getName()));
-            }
-
-            // add description
-            if (descr.length() == 0) descr = propName; // default
-            if (prop.localized()) descr = AutoStepUtils.getString(mSubClass, descr);
-            mPropDescr.put(propName, descr);
-            if (LOG.isDebugEnabled()) LOG.debug("Property added.  " + propName + ": " + descr);
-
-            // add default values
-            mPropValues.put(propName, getDefault(prop));
-
-            // add type
-            mPropTypes.put(propName, propType);
+            reflectProperty(prop);
+         }
+         else
+         {
+            LOG.warn(getString("LogNoProperties", mSubClass.getName()));
          }
       }
       else
       {
-         LOG.warn(getString("LogNoProperties", mSubClass.getName()));
+         for (Property prop : props.value())
+         {
+            reflectProperty(prop);
+         }
       }
    }
 
