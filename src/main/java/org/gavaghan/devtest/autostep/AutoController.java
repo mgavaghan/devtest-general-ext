@@ -7,6 +7,7 @@ import javax.swing.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.itko.lisa.core.ModuleLegacy;
 import com.itko.lisa.editor.TestNodeInfo;
 
 /**
@@ -71,8 +72,8 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
          if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoStep of type: " + mSubClass.getName());
 
          LOG.debug("About to reflect simple getters");
-         mEditorName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getEditorName", TypeName.class);
-         mHelpString = AutoStepUtils.reflectSimpleGetter(mSubClass, "getHelpString", TypeName.class);
+         mEditorName = AutoStepUtils.reflectSimpleGetter(mSubClass, "getEditorName", EditorName.class);
+         mHelpString = AutoStepUtils.reflectSimpleGetter(mSubClass, "getHelpString", HelpString.class);
       }
       catch (RuntimeException exc)
       {
@@ -103,19 +104,23 @@ public abstract class AutoController<T extends AutoStep> extends TestNodeInfo
       putAttribute(mStepKey, node);
    }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.TestNodeInfo#getLargeIcon()
+   /**
+    * Large icon is 32x32
     */
    @Override
-   public abstract Icon getLargeIcon(); // FIXME make a default sometime
+   public Icon getLargeIcon()
+   {
+      return ModuleLegacy.resources.getIcon("icon.tctree.custjavanode.lg");
+   }
 
-   /*
-    * (non-Javadoc)
-    * @see com.itko.lisa.editor.TestNodeInfo#getSmallIcon()
+   /**
+    * Small icon is 16x16
     */
    @Override
-   public abstract Icon getSmallIcon(); // FIXME make a default sometime
+   public Icon getSmallIcon()
+   {
+      return ModuleLegacy.resources.getIcon("icon.tctree.custjavanode");
+   }
 
    /*
     * (non-Javadoc)
