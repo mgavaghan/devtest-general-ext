@@ -63,8 +63,6 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    /** The context key. */
    private String mStepKey;
 
-   // TODO makes this one big map to Property (doesn't work for description due to defaults and localization)
-
    /** Map of property names to their value. */
    private final Map<String, Object> mPropValues = new HashMap<String, Object>();
 
