@@ -3,7 +3,9 @@ package org.gavaghan.devtest.autostep;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -241,5 +243,43 @@ public class AutoStepUtils
       }
 
       return retval;
+   }
+
+   /**
+    * Get all @Property annotations on a class. This addresses the scenario when
+    * a @Repeatable property only appears once and, hence, @Properties comes back
+    * null.
+    * 
+    * @param klass class to reflect on
+    * @return list of Property annotations, even if there was just one
+    */
+   static public List<Property> getProperties(Class<?> klass)
+   {
+      List<Property> list = new ArrayList<Property>();
+
+      Properties props = klass.getAnnotation(Properties.class);
+
+      // might be unfortunate case of only one annotation, so array doesn't come back
+      if (props == null)
+      {
+         Property prop = klass.getAnnotation(Property.class);
+
+         // was there a solitary property?
+         if (prop != null)
+         {
+            list.add(prop);
+         }
+      }
+
+      // if multiple, loop
+      else
+      {
+         for (Property prop : props.value())
+         {
+            list.add(prop);
+         }
+      }
+
+      return list;
    }
 }

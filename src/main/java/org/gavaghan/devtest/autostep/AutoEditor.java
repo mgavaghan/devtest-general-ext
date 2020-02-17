@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -69,24 +70,19 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     */
    private void reflectStepProperties()
    {
-      Properties props = mPrototype.getClass().getAnnotation(Properties.class);
+      List<Property> props = AutoStepUtils.getProperties(mPrototype.getClass());
 
-      if (props != null)
+      for (Property prop : props)
       {
-         for (Property prop : props.value())
-         {
-            // save the property
-            mPropByName.put(prop.name(), prop);
+         // save the property
+         mPropByName.put(prop.name(), prop);
 
-            // create the component for this property
-            JComponent comp = createComponent(prop);
-            mPropComponents.put(prop.name(), comp);
-         }
+         // create the component for this property
+         JComponent comp = createComponent(prop);
+         mPropComponents.put(prop.name(), comp);
       }
-      else
-      {
-         LOG.warn(getString("LogNoProperties", mSubClass.getName()));
-      }
+      
+      if (props.size() == 0)  LOG.warn(getString("LogNoProperties", mSubClass.getName()));
    }
 
    /**
@@ -125,19 +121,19 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    protected void setupEditor()
    {
       GridBagConstraints gbc;
-      
+
       // build the main editor panel
       JPanel mainPanel = new JPanel(new GridBagLayout());
       setMinimumSize(new Dimension(300, 300));
-      
+
       int row = 0;
 
       for (String propName : mPropByName.keySet())
       {
          Property prop = mPropByName.get(propName);
-         
+
          // FIXME what if it's a checkbox?
-         
+
          // add the label
          gbc = new GridBagConstraints();
          gbc.gridx = 0;
@@ -148,7 +144,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          gbc.anchor = GridBagConstraints.NORTHWEST;
          gbc.fill = GridBagConstraints.HORIZONTAL;
          mainPanel.add(new JLabel(mPrototype.getDescription(prop.name())), gbc);
-         
+
          // add the component
          gbc = new GridBagConstraints();
          gbc.gridx = 1;
@@ -159,7 +155,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          gbc.anchor = GridBagConstraints.NORTHWEST;
          gbc.fill = GridBagConstraints.HORIZONTAL;
          mainPanel.add(getComponent(prop.name()), gbc);
-         
+
          row++;
       }
 
@@ -195,9 +191,9 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
             // FIXME localize
             LOG.warn("Both 'sensitive' and 'multiline' are set on '" + property.name() + "' so 'sensitive' takes precedence.");
          }
-         
-         if (property.sensitive())  comp = new JPasswordField("");
-         else if (property.multiline())  comp = new JTextArea("");
+
+         if (property.sensitive()) comp = new JPasswordField("");
+         else if (property.multiline()) comp = new JTextArea("");
          else comp = new JTextField("");
       }
       // initialize a String in an Integer property as long as it parses
