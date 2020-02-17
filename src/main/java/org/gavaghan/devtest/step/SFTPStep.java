@@ -18,6 +18,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 /**
+ * TODO Requires com.jcraft.jsch 0.1.54 in hotDeploy
  *
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */

@@ -22,6 +22,8 @@ import com.jcraft.jsch.Session;
 /**
  * Remotely execute a single command via SSH.
  * 
+ * TODO Requires com.jcraft.jsch 0.1.54 in hotDeploy
+ * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 public class SSHExecuteStep extends SSHStepBase
