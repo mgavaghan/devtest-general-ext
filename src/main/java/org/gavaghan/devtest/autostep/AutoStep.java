@@ -41,19 +41,12 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    /** Default property values. */
    static private final Map<Class<?>, Object> sDefaultInitialValues = new HashMap<Class<?>, Object>();
 
-   /** Boxed type mapping. */
-   static private final Map<Class<?>, Class<?>> sBoxedTypes = new HashMap<Class<?>, Class<?>>();
-
    static
    {
       // setup default property values
       sDefaultInitialValues.put(String.class, "");
       sDefaultInitialValues.put(Integer.class, new Integer(0));
       sDefaultInitialValues.put(Boolean.class, Boolean.FALSE);
-
-      // setup boxed types
-      sBoxedTypes.put(int.class, Integer.class);
-      sBoxedTypes.put(boolean.class, Boolean.class);
    }
 
    /** Our concrete type. */
@@ -97,7 +90,8 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
     */
    private Object getDefault(Property prop)
    {
-      Class<?> propType = prop.type();
+      Class<?> propType = AutoStepUtils.getBoxedType(prop.type());
+      
       Object value = sDefaultInitialValues.get(propType);
       String initial = prop.initial().trim();
 
@@ -118,7 +112,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          {
             try
             {
-               value = AutoStepUtils.parseString(initial, propType);
+               value = AutoStepUtils.parseString(initial, Integer.class);
             }
             catch (IllegalArgumentException exc)
             {
@@ -129,7 +123,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
          // initialize a String in an boolean property
          else if (Boolean.class.equals(propType))
          {
-            value = AutoStepUtils.parseString(initial, propType);
+            value = AutoStepUtils.parseString(initial, Boolean.class);
          }
       }
 
@@ -189,18 +183,8 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    private void reflectProperty(Property prop)
    {
       String propName = prop.name(); // property name
-      Class<?> propType = prop.type(); // property type
+      Class<?> propType = AutoStepUtils.getBoxedType(prop.type()); // property type
       String descr = prop.description(); // property descriptions before calculating default
-
-      // check if value should be boxed
-      Class<?> box = sBoxedTypes.get(propType);
-
-      if (box != null)
-      {
-         LOG.warn(getString("Boxing", propName, box.getSimpleName()));
-
-         propType = box;
-      }
 
       // look for duplicate name in descriptions
       if (mPropDescr.containsKey(propName))

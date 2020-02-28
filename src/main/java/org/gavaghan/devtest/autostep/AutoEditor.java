@@ -180,7 +180,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     */
    protected JComponent createComponent(Property property)
    {
-      Class<?> propType = property.type();
+      Class<?> propType = AutoStepUtils.getBoxedType(property.type());
       JComponent comp;
 
       // initialize a String in a text field

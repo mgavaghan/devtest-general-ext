@@ -30,6 +30,9 @@ public class AutoStepUtils
    /** Logger. */
    static private final Logger LOG = LoggerFactory.getLogger(AutoStepUtils.class);
 
+   /** Boxed type mapping. */
+   static private final Map<Class<?>, Class<?>> sBoxedTypes = new HashMap<Class<?>, Class<?>>();
+
    /** Map class types to their resource bundles. */
    static private final Map<Class<?>, ResourceBundle> sBundles = new HashMap<Class<?>, ResourceBundle>();
 
@@ -45,6 +48,10 @@ public class AutoStepUtils
 
       // make sure we at least find the AutoStep bundle because it's used to localize errors
       sBundles.put(AutoStep.class, ResourceBundle.getBundle(AutoStep.class.getName()));
+
+      // setup boxed types
+      sBoxedTypes.put(int.class, Integer.class);
+      sBoxedTypes.put(boolean.class, Boolean.class);
    }
 
    /**
@@ -281,5 +288,19 @@ public class AutoStepUtils
       }
 
       return list;
+   }
+
+   /**
+    * Get the boxed type of the specified class. If class does not require boxing,
+    * just return 'klass'.
+    * 
+    * @param klass type to check for boxing
+    * @return boxed version of 'klass' or 'klass' if it doesn't require boxing
+    */
+   static public Class<?> getBoxedType(Class<?> klass)
+   {
+      Class<?> boxed = sBoxedTypes.get(klass);
+
+      return (boxed != null) ? boxed : klass;
    }
 }
