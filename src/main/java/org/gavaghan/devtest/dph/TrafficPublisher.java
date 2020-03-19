@@ -413,6 +413,9 @@ public class TrafficPublisher extends DataProtocol
 		case FINALIZE:
 			steps = new WizardStep[] { new TrafficPublisherWizardPanel(this, wizard.isRequestSide(this)) };
 			break;
+			
+      case CONFIGURATION:
+      case SESSION_ID:
 		default:
 			break;
 		}
