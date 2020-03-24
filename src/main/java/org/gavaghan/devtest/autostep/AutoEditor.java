@@ -3,6 +3,8 @@ package org.gavaghan.devtest.autostep;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +33,22 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    /** Logger. */
    static private final Logger LOG = LoggerFactory.getLogger(AutoStep.class);
 
+   static private final Comparator<Property> PROP_COMP = new Comparator<Property>()
+   {
+      @Override
+      public int compare(Property left, Property right)
+      {
+         if (left.index() < right.index()) return -1;
+         if (left.index() > right.index()) return +1;
+         return 0;
+      }
+   };
+
    /** Initialized flag. */
    private boolean mInit = false;
+
+   /** All of the properties on the step sorted by index. */
+   private final List<Property> mProperties = new ArrayList<Property>();
 
    /** Map of property names to their UI components. */
    private final Map<String, JComponent> mPropComponents = new HashMap<String, JComponent>();
@@ -75,12 +91,16 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       for (Property prop : props)
       {
          // save the property
+         mProperties.add(prop);
          mPropByName.put(prop.name(), prop);
 
          // create the component for this property
          JComponent comp = createComponent(prop);
          mPropComponents.put(prop.name(), comp);
       }
+
+      // sort in index order
+      mProperties.sort(PROP_COMP);
 
       if (props.size() == 0) LOG.warn(getString("LogNoProperties", mSubClass.getName()));
    }
@@ -129,10 +149,9 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       setMinimumSize(new Dimension(300, 300));
 
       int row = 0;
-
-      for (String propName : mPropByName.keySet())
+      
+      for (Property prop : mProperties)
       {
-         Property prop = mPropByName.get(propName);
          JComponent comp = getComponent(prop.name());
 
          // FIXME have we handled all types?  JTextArea?

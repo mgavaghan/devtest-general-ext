@@ -19,6 +19,12 @@ import java.lang.annotation.Target;
 public @interface Property
 {
    /**
+    * The appearance index of this property in the default UI layout. This is
+    * ignored if a custom editor is used.
+    */
+   int index() default 0;
+
+   /**
     * The name of the property.
     */
    String name();

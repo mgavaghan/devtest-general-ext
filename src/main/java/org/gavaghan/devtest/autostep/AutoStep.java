@@ -24,7 +24,7 @@ import com.itko.util.XMLUtils;
  * Base class for DevTest steps that are defined declaratively.
  * </p>
  * 
- * Required annotation on subtype are:
+ * Required annotations on subtype are:
  * 
  * @@Typename - the name of the step type
  * @@Property - one or more properties on the step
