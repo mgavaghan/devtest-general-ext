@@ -81,8 +81,8 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          JComponent comp = createComponent(prop);
          mPropComponents.put(prop.name(), comp);
       }
-      
-      if (props.size() == 0)  LOG.warn(getString("LogNoProperties", mSubClass.getName()));
+
+      if (props.size() == 0) LOG.warn(getString("LogNoProperties", mSubClass.getName()));
    }
 
    /**
@@ -120,6 +120,8 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     */
    protected void setupEditor()
    {
+      LOG.debug("setupEditor()");
+
       GridBagConstraints gbc;
 
       // build the main editor panel
@@ -131,30 +133,50 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       for (String propName : mPropByName.keySet())
       {
          Property prop = mPropByName.get(propName);
+         JComponent comp = getComponent(prop.name());
 
-         // FIXME what if it's a checkbox?
+         // FIXME have we handled all types?  JTextArea?
 
-         // add the label
-         gbc = new GridBagConstraints();
-         gbc.gridx = 0;
-         gbc.gridy = row;
-         gbc.gridwidth = 1;
-         gbc.weightx = 0;
-         gbc.weighty = 0;
-         gbc.anchor = GridBagConstraints.NORTHWEST;
-         gbc.fill = GridBagConstraints.HORIZONTAL;
-         mainPanel.add(new JLabel(mPrototype.getDescription(prop.name())), gbc);
+         // is it a checkbox?
+         if (comp instanceof JCheckBox)
+         {
+            // add the checkbox
+            gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            gbc.weightx = 0;
+            gbc.weighty = 0;
+            gbc.anchor = GridBagConstraints.NORTHWEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            mainPanel.add(comp, gbc);
+         }
 
-         // add the component
-         gbc = new GridBagConstraints();
-         gbc.gridx = 1;
-         gbc.gridy = row;
-         gbc.gridwidth = 1;
-         gbc.weightx = 1;
-         gbc.weighty = 0;
-         gbc.anchor = GridBagConstraints.NORTHWEST;
-         gbc.fill = GridBagConstraints.HORIZONTAL;
-         mainPanel.add(getComponent(prop.name()), gbc);
+         // assume a JTextField
+         else
+         {
+            // add the label
+            gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.gridwidth = 1;
+            gbc.weightx = 0;
+            gbc.weighty = 0;
+            gbc.anchor = GridBagConstraints.NORTHWEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            mainPanel.add(new JLabel(mPrototype.getDescription(prop.name()) + ": "), gbc);
+
+            // add the component
+            gbc = new GridBagConstraints();
+            gbc.gridx = 1;
+            gbc.gridy = row;
+            gbc.gridwidth = 1;
+            gbc.weightx = 1;
+            gbc.weighty = 0;
+            gbc.anchor = GridBagConstraints.NORTHWEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            mainPanel.add(comp, gbc);
+         }
 
          row++;
       }
@@ -201,7 +223,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       {
          comp = new JTextField("");
       }
-      // initialize a String in an boolean property
+      // initialize a boolean property
       else if (Boolean.class.equals(propType))
       {
          comp = new JCheckBox(mPrototype.getDescription(property.name()));
@@ -277,10 +299,20 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
       for (String propName : mPropByName.keySet())
       {
-         JComponent comp = ((JTextField) getComponent(propName));
+         JComponent comp = getComponent(propName);
+         Object value;
 
-         // FIXME - this could actually be a JComponent
-         Object value = ((JTextField) comp).getText();
+         // FIXME are we accounting for all types?
+
+         // if it's a JCheckBox
+         if (comp instanceof JCheckBox)
+         {
+            value = new Boolean(((JCheckBox) comp).isSelected());
+         }
+         else
+         {
+            value = ((JTextField) comp).getText();
+         }
 
          step.setProperty(propName, value);
       }
@@ -332,6 +364,8 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    @Override
    public final void display()
    {
+      LOG.debug("display()");
+
       if (!mInit) setupEditor();
 
       mInit = true;
@@ -344,8 +378,18 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          JComponent comp = getComponent(propName);
          Object value = step.getProperty(propName);
 
-         // FIXME - this might not be a JTextField
-         ((JTextField) comp).setText((String) value);
+         // FIXME - have we accounted for all types?
+
+         // if it's a JCheckBox
+         if (comp instanceof JCheckBox)
+         {
+            ((JCheckBox) comp).setSelected(((Boolean) value).booleanValue());
+         }
+         // else, assume a JTextField
+         else
+         {
+            ((JTextField) comp).setText((String) value);
+         }
       }
    }
 }

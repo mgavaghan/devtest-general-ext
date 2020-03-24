@@ -462,7 +462,8 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       {
          for (String propName : mPropValues.keySet())
          {
-            String text = findChildGetItsText(element, propName);
+            String escapedName = propName.replace(" ", "__");
+            String text = findChildGetItsText(element, escapedName);
 
             // skip unassigned values.  the property was probably removed
             if (text == null) continue;
@@ -492,7 +493,8 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
       {
          for (String propName : mPropValues.keySet())
          {
-            XMLUtils.streamTagAndChild(pw, propName, getProperty(propName).toString());
+            String escapedName = propName.replace(" ", "__");
+            XMLUtils.streamTagAndChild(pw, escapedName, getProperty(propName).toString());
          }
       }
       catch (Exception exc)
