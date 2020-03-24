@@ -3,6 +3,7 @@ package org.gavaghan.devtest.autostep;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,8 +32,9 @@ import com.itko.lisa.editor.CustomEditor;
 public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 {
    /** Logger. */
-   static private final Logger LOG = LoggerFactory.getLogger(AutoStep.class);
+   static private final Logger LOG = LoggerFactory.getLogger(AutoEditor.class);
 
+   /** Comparator for sorting properties. */
    static private final Comparator<Property> PROP_COMP = new Comparator<Property>()
    {
       @Override
@@ -147,7 +149,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       // build the main editor panel
       JPanel mainPanel = new JPanel(new GridBagLayout());
       setMinimumSize(new Dimension(300, 300));
-
+      
       int row = 0;
       
       for (Property prop : mProperties)
