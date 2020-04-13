@@ -18,9 +18,10 @@ public class TrafficPublisherWizardPanel extends WizardStep
 	private final TrafficPublisher mDataProtocol;
 	private boolean mIsRequestSide;
 	
-
 	/**
-	 * @param dataProtocol
+	 * Create a new TrafficPublisherWizardPanel.
+	 * @param dataProtocol instance of the publisher
+    * @param isRequestSide flag indicating if this is request or response
 	 */
 	public TrafficPublisherWizardPanel(final TrafficPublisher dataProtocol, boolean isRequestSide)
 	{

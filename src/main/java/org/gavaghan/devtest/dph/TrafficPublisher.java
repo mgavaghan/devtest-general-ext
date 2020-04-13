@@ -38,6 +38,8 @@ import com.itko.util.Parameter;
 /**
  * Publish the request and response to an Active MQ topic.
  * 
+ * FIXME add Active MQ as asset
+ * 
  * @author <a href="mailto:mike@gavaghan.org">Mike Gavaghan</a>
  */
 public class TrafficPublisher extends DataProtocol
@@ -128,7 +130,7 @@ public class TrafficPublisher extends DataProtocol
 		json.put("metadata", metadata);
 
 		// add properties
-		// addProperties(json, testExec);
+		addProperties(json, testExec);
 
 		return json;
 	}
@@ -172,7 +174,7 @@ public class TrafficPublisher extends DataProtocol
 		json.put("metadata", metadata);
 
 		// add properties
-		// addProperties(json, testExec);
+		addProperties(json, testExec);
 
 		return json;
 	}
@@ -298,6 +300,8 @@ public class TrafficPublisher extends DataProtocol
 		Long txnId = (Long) testExec.getStateValue(TXN_ID_KEY);
 
 		JSONObject json = buildJSONResponse(testExec, response, txnId);
+		
+		testExec.removeState(TXN_ID_KEY);
 
 		publishJSON(json, testExec);
 	}
@@ -428,7 +432,7 @@ public class TrafficPublisher extends DataProtocol
 		String brokerUrl = "tcp://localhost:61616";
 		String brokerUsername = "";
 		String brokerPassword = "";
-		String topicName = "SomeTopic";
+		String topicName = "kioskv6";
 
 		// create a Connection Factory
 		ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUsername, brokerPassword, brokerUrl);
@@ -443,7 +447,7 @@ public class TrafficPublisher extends DataProtocol
 		// create the Topic to which messages will be sent
 		Topic topic = session.createTopic(topicName);
 
-		// create a MessageProducer for sending messages
+		// create a MessageConsumer for sending messages
 		MessageConsumer messageConsumer = session.createConsumer(topic);
 
 		while (true)

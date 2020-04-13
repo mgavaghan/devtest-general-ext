@@ -2,6 +2,7 @@ package org.gavaghan.devtest.dph;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,9 +37,14 @@ public class TrafficPublisherEditor extends JPanel
 		
 		setLayout(new GridBagLayout());
 		
+      Insets insets = new Insets(10,10,0,10);
+      Insets leftInsets = new Insets(10,10,0,1);
+      Insets rightInsets = new Insets(10,1,0,10);
+      
 		GridBagConstraints gbc;
 
 		gbc = new GridBagConstraints();
+      gbc.insets = leftInsets;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
@@ -48,6 +54,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(new JLabel("Broker URL: "), gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = rightInsets;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
@@ -57,6 +64,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(mBrokerUrl, gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = leftInsets;
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weightx = 0;
@@ -66,6 +74,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(new JLabel("Broker Username: "), gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = rightInsets;
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		gbc.weightx = 1;
@@ -75,6 +84,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(mBrokerUsername, gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = leftInsets;
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.weightx = 0;
@@ -84,6 +94,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(new JLabel("Broker Password: "), gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = rightInsets;
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		gbc.weightx = 1;
@@ -93,6 +104,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(mBrokerPassword, gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = leftInsets;
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.weightx = 0;
@@ -102,6 +114,7 @@ public class TrafficPublisherEditor extends JPanel
 		add(new JLabel("MQ Topic: "), gbc);
 
 		gbc = new GridBagConstraints();
+      gbc.insets = rightInsets;
 		gbc.gridx = 1;
 		gbc.gridy = 3;
 		gbc.weightx = 1;
@@ -160,6 +173,7 @@ public class TrafficPublisherEditor extends JPanel
 		config.setBrokerUsername(mBrokerUsername.getText());
 		config.setBrokerPassword(mBrokerPassword.getText());
 		config.setTopic(mTopic.getText());
+		
 		return true;
 	}
 }
