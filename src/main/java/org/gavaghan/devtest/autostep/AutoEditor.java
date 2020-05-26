@@ -200,6 +200,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    private int setupTextArea(Insets insets, JPanel mainPanel, int row, Property prop, JComponent comp)
    {
       GridBagConstraints gbc;
+      
+      int rows = prop.rows();
+      
+      // FIXME are we localizing exceptions?
+      if (rows <= 0)  throw new RuntimeException("Row count must be positive on '" + prop.name() + "'");
 
       // add the label
       JLabel label = new JLabel(mPrototype.getDescription(prop.name()));
@@ -232,11 +237,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       // measure the JTextArea size by lines
       FontMetrics metrics = mainPanel.getFontMetrics(comp.getFont());
 
-      int height = 10 * metrics.getHeight();
+      int height = rows * metrics.getHeight();
 
       JScrollPane scrollPane = new JScrollPane();
-      scrollPane.setMaximumSize(new Dimension(250, height));
-      scrollPane.setPreferredSize(new Dimension(250, height));
+      scrollPane.setMaximumSize(new Dimension(400, height));
+      scrollPane.setPreferredSize(new Dimension(400, height));
 
       scrollPane.setViewportView(comp);
 
