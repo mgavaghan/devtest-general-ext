@@ -1,6 +1,8 @@
 package org.gavaghan.devtest.autostep;
 
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,6 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -55,7 +58,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    /** Map of property names to their UI components. */
    private final Map<String, JComponent> mPropComponents = new HashMap<String, JComponent>();
 
-   /** Map of property names to their UI components. */
+   /** Map of property names to their Property instance. */
    private final Map<String, Property> mPropByName = new HashMap<String, Property>();
 
    /** Our factory for creating instances of the type parameter. */
@@ -71,11 +74,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    private final String mStepKey;
 
    /**
-    * Convenience method for getting AutoStep resources.
+    * Convenience method for getting localized AutoStep resources.
     * 
-    * @param key
-    * @param args
-    * @return
+    * @param key  resource key
+    * @param args arguments to the source string
+    * @return a rendered localized string including
     */
    private String getString(String key, Object... args)
    {
@@ -108,46 +111,18 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    }
 
    /**
-    * Start reflecting on the concrete type
-    * 
-    * @param stepType the AutoStep we edit
-    */
-   protected AutoEditor(Class<T> stepType)
-   {
-      try
-      {
-         // build a type factory so we can get a prototype instance of the step
-         mStepFactory = new TypeParameterFactory<T>(stepType);
-         mPrototype = mStepFactory.get();
-
-         mStepKey = mPrototype.getStepKey();
-
-         // get concrete type
-         mSubClass = getClass();
-         if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoEditor of type: " + mSubClass.getName());
-
-         LOG.debug("About to reflecy step properties");
-         reflectStepProperties();
-      }
-      catch (RuntimeException exc)
-      {
-         String text = getString("FailedToInstantiate", getClass().getName());
-         LOG.error(text, exc);
-         throw new RuntimeException(text, exc);
-      }
-   }
-
-   /**
     * Add a JCheckBox control to the main panel.
     * 
     * @param insets
     * @param mainPanel
     * @param row
     * @param comp
+    * @return next row to render
     */
-   private void setupCheckBox(Insets insets, JPanel mainPanel, int row, JComponent comp)
+   private int setupCheckBox(Insets insets, JPanel mainPanel, int row, JComponent comp)
    {
       GridBagConstraints gbc;
+
       comp.setFont(new Font(comp.getFont().getFontName(), Font.BOLD, 14));
 
       // add the checkbox
@@ -161,6 +136,8 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       gbc.anchor = GridBagConstraints.NORTHWEST;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       mainPanel.add(comp, gbc);
+
+      return row + 1;
    }
 
    /**
@@ -172,10 +149,12 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
     * @param row
     * @param prop
     * @param comp
+    * @return next row to render
     */
-   private void setupTextField(Insets leftInsets, Insets rightInsets, JPanel mainPanel, int row, Property prop, JComponent comp)
+   private int setupTextField(Insets leftInsets, Insets rightInsets, JPanel mainPanel, int row, Property prop, JComponent comp)
    {
       GridBagConstraints gbc;
+
       // add the label
       JLabel label = new JLabel(mPrototype.getDescription(prop.name()) + ": ");
       label.setFont(new Font(label.getFont().getFontName(), Font.BOLD, 14));
@@ -204,6 +183,96 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       gbc.anchor = GridBagConstraints.BASELINE;
       gbc.fill = GridBagConstraints.HORIZONTAL;
       mainPanel.add(comp, gbc);
+
+      return row + 1;
+   }
+
+   /**
+    * Add a JTextField control inside a JScrollPane control to the main panel.
+    * 
+    * @param insets
+    * @param mainPanel
+    * @param row
+    * @param prop
+    * @param comp
+    * @return next row to render
+    */
+   private int setupTextArea(Insets insets, JPanel mainPanel, int row, Property prop, JComponent comp)
+   {
+      GridBagConstraints gbc;
+
+      // add the label
+      JLabel label = new JLabel(mPrototype.getDescription(prop.name()));
+      label.setFont(new Font(label.getFont().getFontName(), Font.BOLD, 14));
+
+      gbc = new GridBagConstraints();
+      gbc.insets = insets;
+      gbc.gridx = 0;
+      gbc.gridy = row;
+      gbc.gridwidth = 2;
+      gbc.weightx = 0;
+      gbc.weighty = 0;
+      gbc.anchor = GridBagConstraints.WEST;
+      gbc.fill = GridBagConstraints.BOTH;
+      mainPanel.add(label, gbc);
+
+      // add the component
+      comp.setFont(new Font(comp.getFont().getFontName(), Font.PLAIN, 14));
+
+      gbc = new GridBagConstraints();
+      gbc.insets = insets;
+      gbc.gridx = 1;
+      gbc.gridy = row + 1;
+      gbc.gridwidth = 2;
+      gbc.weightx = 1;
+      gbc.weighty = 0;
+      gbc.anchor = GridBagConstraints.BASELINE;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+
+      // measure the JTextArea size by lines
+      FontMetrics metrics = mainPanel.getFontMetrics(comp.getFont());
+
+      int height = 10 * metrics.getHeight();
+
+      JScrollPane scrollPane = new JScrollPane();
+      scrollPane.setMaximumSize(new Dimension(250, height));
+      scrollPane.setPreferredSize(new Dimension(250, height));
+
+      scrollPane.setViewportView(comp);
+
+      mainPanel.add(scrollPane, gbc);
+
+      return row + 2;
+   }
+
+   /**
+    * Start reflecting on the concrete type
+    * 
+    * @param stepType the AutoStep we edit
+    */
+   protected AutoEditor(Class<T> stepType)
+   {
+      try
+      {
+         // build a type factory so we can get a prototype instance of the step
+         mStepFactory = new TypeParameterFactory<T>(stepType);
+         mPrototype = mStepFactory.get();
+
+         mStepKey = mPrototype.getStepKey();
+
+         // get concrete type
+         mSubClass = getClass();
+         if (LOG.isDebugEnabled()) LOG.debug("Constructing AutoEditor of type: " + mSubClass.getName());
+
+         LOG.debug("About to reflect step properties");
+         reflectStepProperties();
+      }
+      catch (RuntimeException exc)
+      {
+         String text = getString("FailedToInstantiate", getClass().getName());
+         LOG.error(text, exc);
+         throw new RuntimeException(text, exc);
+      }
    }
 
    /**
@@ -230,27 +299,23 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
       {
          JComponent comp = getComponent(prop.name());
 
-         // FIXME have we handled all types?  JTextArea?
-
          // is it a checkbox?
          if (comp instanceof JCheckBox)
          {
-            setupCheckBox(insets, mainPanel, row, comp);
+            row = setupCheckBox(insets, mainPanel, row, comp);
          }
-         
+
          // is it a text area?
          else if (comp instanceof JTextArea)
          {
-            
+            row = setupTextArea(insets, mainPanel, row, prop, comp);
          }
 
          // assume a JTextField
          else
          {
-            setupTextField(leftInsets, rightInsets, mainPanel, row, prop, comp);
+            row = setupTextField(leftInsets, rightInsets, mainPanel, row, prop, comp);
          }
-
-         row++;
       }
 
       // add main panel to editor
@@ -268,10 +333,10 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
    /**
     * Create the UI component for the Property. Subclasses may override this to
-    * create custom JComponents.
+    * create custom <code>JComponent</code>s.
     * 
-    * @param property the property of the field to create a component for.
-    * @return the new component.
+    * @param property the property of the field to create a component for
+    * @return the new component
     */
    protected JComponent createComponent(Property property)
    {
@@ -431,6 +496,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
                if (warning != null) return warning;
             }
+         }
+         // if it's a text area
+         else if (comp instanceof JTextArea)
+         {
+            // FIXME validate text area
          }
       }
 
