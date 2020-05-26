@@ -138,25 +138,94 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
    }
 
    /**
+    * Add a JCheckBox control to the main panel.
+    * 
+    * @param insets
+    * @param mainPanel
+    * @param row
+    * @param comp
+    */
+   private void setupCheckBox(Insets insets, JPanel mainPanel, int row, JComponent comp)
+   {
+      GridBagConstraints gbc;
+      comp.setFont(new Font(comp.getFont().getFontName(), Font.BOLD, 14));
+
+      // add the checkbox
+      gbc = new GridBagConstraints();
+      gbc.insets = insets;
+      gbc.gridx = 0;
+      gbc.gridy = row;
+      gbc.gridwidth = 2;
+      gbc.weightx = 0;
+      gbc.weighty = 0;
+      gbc.anchor = GridBagConstraints.NORTHWEST;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      mainPanel.add(comp, gbc);
+   }
+
+   /**
+    * Add a JTextField control to the main panel.
+    * 
+    * @param leftInsets
+    * @param rightInsets
+    * @param mainPanel
+    * @param row
+    * @param prop
+    * @param comp
+    */
+   private void setupTextField(Insets leftInsets, Insets rightInsets, JPanel mainPanel, int row, Property prop, JComponent comp)
+   {
+      GridBagConstraints gbc;
+      // add the label
+      JLabel label = new JLabel(mPrototype.getDescription(prop.name()) + ": ");
+      label.setFont(new Font(label.getFont().getFontName(), Font.BOLD, 14));
+
+      gbc = new GridBagConstraints();
+      gbc.insets = leftInsets;
+      gbc.gridx = 0;
+      gbc.gridy = row;
+      gbc.gridwidth = 1;
+      gbc.weightx = 0;
+      gbc.weighty = 0;
+      gbc.anchor = GridBagConstraints.BASELINE;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      mainPanel.add(label, gbc);
+
+      // add the component
+      comp.setFont(new Font(comp.getFont().getFontName(), Font.PLAIN, 14));
+
+      gbc = new GridBagConstraints();
+      gbc.insets = rightInsets;
+      gbc.gridx = 1;
+      gbc.gridy = row;
+      gbc.gridwidth = 1;
+      gbc.weightx = 1;
+      gbc.weighty = 0;
+      gbc.anchor = GridBagConstraints.BASELINE;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      mainPanel.add(comp, gbc);
+   }
+
+   /**
     * Build the UI.
     */
    protected void setupEditor()
    {
       LOG.debug("setupEditor()");
-      
-      Insets insets = new Insets(10,10,0,10);
-      Insets leftInsets = new Insets(10,10,0,1);
-      Insets rightInsets = new Insets(10,1,0,10);
-      
+
+      Insets insets = new Insets(10, 10, 0, 10);
+      Insets leftInsets = new Insets(10, 10, 0, 1);
+      Insets rightInsets = new Insets(10, 1, 0, 10);
+
       GridBagConstraints gbc;
 
       // build the main editor panel
       JPanel mainPanel = new JPanel(new GridBagLayout());
-      
+
       mainPanel.setFont(new Font(mainPanel.getFont().getFontName(), Font.BOLD, 12));
-      
+
       int row = 0;
-      
+
       for (Property prop : mProperties)
       {
          JComponent comp = getComponent(prop.name());
@@ -166,52 +235,19 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          // is it a checkbox?
          if (comp instanceof JCheckBox)
          {
-            comp.setFont(new Font(comp.getFont().getFontName(), Font.BOLD, 14));
+            setupCheckBox(insets, mainPanel, row, comp);
+         }
+         
+         // is it a text area?
+         else if (comp instanceof JTextArea)
+         {
             
-            // add the checkbox
-            gbc = new GridBagConstraints();
-            gbc.insets = insets;
-            gbc.gridx = 0;
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            gbc.weightx = 0;
-            gbc.weighty = 0;
-            gbc.anchor = GridBagConstraints.NORTHWEST;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            mainPanel.add(comp, gbc);
          }
 
          // assume a JTextField
          else
          {
-            // add the label
-            JLabel label = new JLabel(mPrototype.getDescription(prop.name()) + ": ");
-            label.setFont(new Font(label.getFont().getFontName(), Font.BOLD, 14));
-            
-            gbc = new GridBagConstraints();
-            gbc.insets = leftInsets;
-            gbc.gridx = 0;
-            gbc.gridy = row;
-            gbc.gridwidth = 1;
-            gbc.weightx = 0;
-            gbc.weighty = 0;
-            gbc.anchor = GridBagConstraints.BASELINE;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            mainPanel.add(label, gbc);
-
-            // add the component
-            comp.setFont(new Font(comp.getFont().getFontName(), Font.PLAIN, 14));
-
-            gbc = new GridBagConstraints();
-            gbc.insets = rightInsets;
-            gbc.gridx = 1;
-            gbc.gridy = row;
-            gbc.gridwidth = 1;
-            gbc.weightx = 1;
-            gbc.weighty = 0;
-            gbc.anchor = GridBagConstraints.BASELINE;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            mainPanel.add(comp, gbc);
+            setupTextField(leftInsets, rightInsets, mainPanel, row, prop, comp);
          }
 
          row++;
@@ -219,7 +255,7 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
 
       // add main panel to editor
       setLayout(new GridBagLayout());
-      
+
       gbc = new GridBagConstraints();
       gbc.gridx = 0;
       gbc.gridy = 0;
@@ -346,6 +382,12 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          {
             value = new Boolean(((JCheckBox) comp).isSelected());
          }
+         // if it's a JTextArea
+         else if (comp instanceof JTextArea)
+         {
+            value = ((JTextArea) comp).getText();
+         }
+         // else, assume it's a JTextArea
          else
          {
             value = ((JTextField) comp).getText();
@@ -421,6 +463,11 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          if (comp instanceof JCheckBox)
          {
             ((JCheckBox) comp).setSelected(((Boolean) value).booleanValue());
+         }
+         // if it's a JTextArea
+         else if (comp instanceof JTextArea)
+         {
+            ((JTextArea) comp).setText((String) value);
          }
          // else, assume a JTextField
          else
