@@ -340,7 +340,7 @@ public abstract class AutoStep extends TestNode implements CloneImplemented
    /**
     * Get the description of a property.
     * 
-    * @param propName the propery name
+    * @param propName the property name
     * @return the description string
     */
    String getDescription(String propName)

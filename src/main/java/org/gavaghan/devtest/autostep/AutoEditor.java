@@ -505,7 +505,23 @@ public abstract class AutoEditor<T extends AutoStep> extends CustomEditor
          // if it's a text area
          else if (comp instanceof JTextArea)
          {
-            // FIXME validate text area
+            String text = ((JTextArea) comp).getText().trim();
+
+            if (text.length() == 0)
+            {
+               // make sure mandatory fields are populated
+               if (prop.mandatory())
+               {
+                  return getString("ValueMissing", mPrototype.getDescription(propName));
+               }
+            }
+            // make sure populated fields are valid
+            else
+            {
+               String warning = isValid(prop, text);
+
+               if (warning != null) return warning;
+            }
          }
       }
 
